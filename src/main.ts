@@ -16,7 +16,14 @@ import {
   xpToNextLevel,
   formatCoins,
   boostedCellIndices,
+  RULES,
 } from "./game/engine";
+import {
+  addCheatCoins,
+  addCheatGem,
+  advanceCheatLevel,
+  unlockCheatWorlds,
+} from "./game/cheats";
 import { gemSvg, crateSvg, iconSvg } from "./art";
 import {
   loadGame,
@@ -39,6 +46,7 @@ let boardSignature = "";
 let toastTimer: ReturnType<typeof setTimeout>;
 let modalKind = "";
 let audioContext: AudioContext | undefined;
+let selectedCheatRank = 0;
 const t = (key: TextKey) => translate(state?.settings.language ?? "fr", key);
 const name = (rank: number) =>
   localizedGem(gemName(state.activeWorld, rank), state.settings.language);
@@ -122,6 +130,7 @@ function shell() {
   document.documentElement.lang = state.settings.language;
   document.body.dataset.world = state.activeWorld;
   root.innerHTML = `<main class="game" aria-label="Merge Gems!">
+    ${state.settings.cheatsEnabled ? `<div class="cheat-toolbar"><button id="cheat-menu" class="cheat-launcher" aria-label="${t("cheats")}">${iconSvg("star")}<span>${t("cheatButton")}</span></button></div>` : ""}
     <header class="header"><h1 class="logo" aria-label="Merge Gems!"><span>MERGE</span> <b>GEMS!</b></h1>
       <button id="area" class="area-button" aria-label="${t("area")}">${worldName(state.activeWorld, state.settings.language)} <span>▾</span></button>
       <div class="counters"><div class="counter" aria-label="${t("coins")}">${coinIcon()}<strong id="coins"></strong></div><div class="counter rate">${coinIcon()}<small>${t("perSecond")}</small><strong id="income"></strong></div></div>
@@ -137,6 +146,7 @@ function shell() {
     <button id="update" class="update-banner" hidden></button>
   </main><div id="toast" class="toast" role="status" hidden></div><dialog id="modal"><div id="modal-content"></div></dialog><input id="import-file" type="file" accept="application/json,.json" hidden />`;
   document.querySelector("#settings")!.addEventListener("click", showSettings);
+  document.querySelector("#cheat-menu")?.addEventListener("click", showCheats);
   document
     .querySelector("#collection")!
     .addEventListener("click", showCollection);
@@ -177,6 +187,8 @@ function renderStatus() {
   document
     .querySelector("#board")
     ?.setAttribute("aria-disabled", String(!canPlay()));
+  const cheatButton = document.querySelector<HTMLButtonElement>("#cheat-menu");
+  if (cheatButton) cheatButton.disabled = !canPlay();
 }
 function render() {
   const world = state.worlds[state.activeWorld];
@@ -446,12 +458,20 @@ function modal(title: string, content: string, kind = "other") {
 function showSettings() {
   modal(
     t("settings"),
-    `<div class="setting-row"><label for="language">${t("language")}</label><select id="language"><option value="fr" ${state.settings.language === "fr" ? "selected" : ""}>Français</option><option value="en" ${state.settings.language === "en" ? "selected" : ""}>English</option></select></div>
+    `<button id="cheats-toggle" class="setting-row cheat-setting" role="switch" aria-checked="${state.settings.cheatsEnabled}"><span>${t("cheats")}</span><span class="toggle-track" aria-hidden="true"><span></span></span></button>
+    <div class="setting-row"><label for="language">${t("language")}</label><select id="language"><option value="fr" ${state.settings.language === "fr" ? "selected" : ""}>Français</option><option value="en" ${state.settings.language === "en" ? "selected" : ""}>English</option></select></div>
     <button id="sound" class="setting-row">${t("sound")}<b>${state.settings.sound ? t("on") : t("off")}</b></button>
     <p class="small">${t("local")}</p><div class="settings-actions"><button id="export-save">${t("export")}</button><button id="import-save">${t("import")}</button><button id="reset-save" class="danger">${t("reset")}</button></div>
     <p class="small">${t("install")}</p><details><summary>${t("about")}</summary><p>${t("evidence")}</p><p>${t("missing")}</p><a href="https://github.com/EndingMango26/Merge-Gems/blob/reconstruction/merge-gems-reference/docs/reference-analysis.md" target="_blank" rel="noopener">${t("references")}</a></details>`,
     "settings",
   );
+  document.querySelector("#cheats-toggle")!.addEventListener("click", () => {
+    if (!canPlay()) return;
+    state.settings.cheatsEnabled = !state.settings.cheatsEnabled;
+    persist();
+    shell();
+    showSettings();
+  });
   document.querySelector("#language")!.addEventListener("change", (e) => {
     if (!session?.active || pendingRecovery) return;
     state.settings.language =
@@ -468,6 +488,59 @@ function showSettings() {
     sound();
   });
   attachSaveButtons();
+}
+function showCheats() {
+  if (!canPlay() || !state.settings.cheatsEnabled) return;
+  const world = state.worlds[state.activeWorld];
+  modal(
+    t("cheats"),
+    `<p class="small">${worldName(state.activeWorld, state.settings.language)} · ${t("cheatHint")}</p>
+    <div class="shop-balance">${coinIcon()}<span id="cheat-coins">${formatCoins(BigInt(world.coins), state.settings.language)}</span></div>
+    <div class="cheat-actions"><p>${t("addCoins")}</p><div class="cheat-coin-actions">${[1000n, 1000000n, 1000000000n].map((amount) => `<button data-cheat-coins="${amount * 1000n}">+${formatCoins(amount * 1000n, state.settings.language)}</button>`).join("")}</div>
+    <div class="setting-row cheat-gem-row"><label for="cheat-rank">${t("cheatGem")}</label><select id="cheat-rank">${Array.from({ length: RULES.maxRank + 1 }, (_, rank) => `<option value="${rank}" ${rank === selectedCheatRank ? "selected" : ""}>${rank + 1} · ${name(rank)}</option>`).join("")}</select></div>
+    <button id="cheat-add-gem">${t("addGem")}</button>
+    <button id="cheat-level">${t("cheatLevel")}</button>
+    <button id="cheat-unlock">${t("cheatUnlock")}</button></div>`,
+    "cheats",
+  );
+  const apply = (action: () => boolean, failure: TextKey = "cheatLimit") => {
+    if (!canPlay() || !state.settings.cheatsEnabled) return;
+    if (!action()) {
+      toast(t(failure));
+      return;
+    }
+    if (!persist()) return;
+    render();
+    showCheats();
+    toast(t("cheatDone"));
+  };
+  document
+    .querySelectorAll<HTMLElement>("[data-cheat-coins]")
+    .forEach((button) => {
+      button.addEventListener("click", () =>
+        apply(() =>
+          addCheatCoins(state, BigInt(button.dataset.cheatCoins!), Date.now()),
+        ),
+      );
+    });
+  document.querySelector("#cheat-rank")!.addEventListener("change", (event) => {
+    selectedCheatRank = Number((event.target as HTMLSelectElement).value);
+  });
+  document
+    .querySelector("#cheat-add-gem")!
+    .addEventListener("click", () =>
+      apply(() => addCheatGem(state, selectedCheatRank, Date.now()), "noSpace"),
+    );
+  document
+    .querySelector("#cheat-level")!
+    .addEventListener("click", () =>
+      apply(() => advanceCheatLevel(state, Date.now())),
+    );
+  document
+    .querySelector("#cheat-unlock")!
+    .addEventListener("click", () =>
+      apply(() => unlockCheatWorlds(state, Date.now())),
+    );
 }
 function attachSaveButtons() {
   document.querySelector("#export-save")?.addEventListener("click", () => {
@@ -533,16 +606,18 @@ function showWorlds() {
     `<div class="world-list">${WORLD_IDS.map((id) => `<button data-world="${id}" ${!isWorldUnlocked(state, id) ? "disabled" : ""}><span>${worldName(id, state.settings.language)}</span><small>${isWorldUnlocked(state, id) ? "" : id === "moonland" ? t("unlockMoon") : t("unlockAztec")}</small></button>`).join("")}</div>`,
     "worlds",
   );
-  document.querySelectorAll<HTMLElement>("[data-world]").forEach((el) =>
-    el.addEventListener("click", () => {
-      const id = el.dataset.world as WorldId;
-      if (!canPlay() || !isWorldUnlocked(state, id)) return;
-      advance(state, Date.now());
-      state.activeWorld = id;
-      persist();
-      shell();
-    }),
-  );
+  document
+    .querySelectorAll<HTMLElement>(".world-list button[data-world]")
+    .forEach((el) =>
+      el.addEventListener("click", () => {
+        const id = el.dataset.world as WorldId;
+        if (!canPlay() || !isWorldUnlocked(state, id)) return;
+        advance(state, Date.now());
+        state.activeWorld = id;
+        persist();
+        shell();
+      }),
+    );
 }
 function showDiscovery(rank: number) {
   modal(
@@ -707,6 +782,14 @@ async function start() {
     render();
     if (modalKind === "shop") {
       const el = document.querySelector("#shop-coins");
+      if (el)
+        el.textContent = formatCoins(
+          BigInt(state.worlds[state.activeWorld].coins),
+          state.settings.language,
+        );
+    }
+    if (modalKind === "cheats") {
+      const el = document.querySelector("#cheat-coins");
       if (el)
         el.textContent = formatCoins(
           BigInt(state.worlds[state.activeWorld].coins),

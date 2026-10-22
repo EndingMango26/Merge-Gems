@@ -21,7 +21,7 @@ export interface GameState {
   savedAt: number;
   activeWorld: WorldId;
   worlds: Record<WorldId, WorldState>;
-  settings: { language: Language; sound: boolean };
+  settings: { language: Language; sound: boolean; cheatsEnabled: boolean };
   tutorialStep: number;
 }
 export const WORLD_IDS: WorldId[] = ["gemland", "moonland", "aztecland"];

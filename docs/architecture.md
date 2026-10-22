@@ -42,3 +42,7 @@ L'aperçu est accessible sous `/Merge-Gems/`. `npm run dev` sert le développeme
 ## Limites techniques extrêmes
 
 Les sauvegardes acceptent jusqu’à300chiffres par montant et4000achats par rang (limites techniques documentées, non des règles originales). Au-delà des suffixes attestés, l’affichage passe en notation scientifique à trois chiffres significatifs ; cette présentation est provisoire et les calculs conservent la valeur entière. Les règles d’XP non observées, le plafond24cases et les revenus d’absence restent explicitement provisoires dans `rules.ts`.
+
+## Option de triche
+
+`settings.cheatsEnabled` est une extension booléenne du formatv2. Un fichier ancien qui ne possède pas ce champ est normalisé à`false` ; une valeur présente de type incorrect est refusée. L’option persiste dans les sauvegardes et exports. `src/game/cheats.ts` contient les commandes facultatives : elles exigent l’activation, règlent le temps écoulé avant toute mutation, respectent les bornes monétaires et refusent d’écraser une case. Les mondes sont réglés comme verrouillés avant leur déblocage pour éviter une production rétroactive. Les règles du moteur normal restent séparées.

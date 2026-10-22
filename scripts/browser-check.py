@@ -413,6 +413,85 @@ def touch_controls(browser, engine):
         close_context(context, engine)
 
 
+def cheats(browser, engine):
+    # The legacy v2 fixture has no cheats field: loading it must opt out.
+    context, page, errors = new_page(browser, state=fixture())
+    try:
+        assert page.locator('#cheat-menu').count() == 0
+        page.locator('#settings').click()
+        assert page.locator('#cheats-toggle').get_attribute('aria-checked') == 'false'
+        page.locator('#cheats-toggle').click()
+        assert saved(page)['settings']['cheatsEnabled'] is True
+        close_modal(page)
+        button = page.locator('#cheat-menu').bounding_box()
+        logo = page.locator('.logo').bounding_box()
+        assert button['x'] < 50 and button['y'] + button['height'] <= logo['y']
+        page.reload(); writer_ready(page)
+        assert page.locator('#cheat-menu').is_visible()
+        before = int(saved(page)['worlds']['gemland']['coins'])
+        page.locator('#cheat-menu').click()
+        page.locator('[data-cheat-coins="1000000"]').click()
+        assert int(saved(page)['worlds']['gemland']['coins']) >= before + 1_000_000
+        page.locator('#cheat-rank').select_option('38')
+        page.locator('#cheat-add-gem').click()
+        world = saved(page)['worlds']['gemland']
+        assert world['maxRank'] == 38
+        assert any(tile and tile['kind'] == 'gem' and tile['rank'] == 38 for tile in world['cells'])
+        page.locator('#cheat-level').click()
+        assert saved(page)['worlds']['gemland']['level'] == 2
+        assert page.locator('.tile').count() == 7
+        page.locator('#cheat-unlock').click()
+        assert saved(page)['worlds']['gemland']['level'] == 16
+        close_modal(page)
+        page.locator('#area').click()
+        assert all(not page.locator(f'.world-list button[data-world="{world}"]').is_disabled() for world in ('gemland','moonland','aztecland'))
+        page.locator('.world-list button[data-world="moonland"]').click()
+        assert saved(page)['activeWorld'] == 'moonland'
+        moon_before = int(saved(page)['worlds']['moonland']['coins'])
+        page.locator('#cheat-menu').click()
+        page.locator('[data-cheat-coins="1000000"]').click()
+        assert int(saved(page)['worlds']['moonland']['coins']) >= moon_before + 1_000_000
+        close_modal(page)
+        page.locator('#area').click()
+        page.locator('.world-list button[data-world="gemland"]').click()
+        page.locator('#settings').click()
+        with page.expect_download() as downloaded:
+            page.locator('#export-save').click()
+        exported = downloaded.value
+        destination = RESULTS / f'{engine}-cheat-export.json'
+        exported.save_as(destination)
+        assert json.loads(destination.read_text())['game']['settings']['cheatsEnabled'] is True
+        page.locator('#language').select_option('en')
+        assert page.locator('#cheats-toggle').inner_text() == 'Cheat menu'
+        close_modal(page)
+        assert page.locator('#cheat-menu').inner_text() == 'Cheats'
+        page.locator('#cheat-menu').click()
+        assert page.locator('#cheat-add-gem').inner_text() == 'Add gem'
+        page.screenshot(path=RESULTS / f'{engine}-cheats.png')
+        close_modal(page)
+        page.locator('#settings').click()
+        page.locator('#cheats-toggle').click()
+        close_modal(page)
+        assert page.locator('#cheat-menu').count() == 0
+        page.reload(); writer_ready(page)
+        assert saved(page)['settings']['cheatsEnabled'] is False
+        assert saved(page)['worlds']['gemland']['maxRank'] == 38
+        page.locator('#settings').click()
+        page.once('dialog', lambda dialog: dialog.accept())
+        page.locator('#import-file').set_input_files(destination)
+        page.wait_for_function('document.querySelector("#cheat-menu") !== null')
+        assert saved(page)['settings']['cheatsEnabled'] is True
+        for size in ((320,568),(375,667),(390,844),(430,932)):
+            page.set_viewport_size({'width':size[0],'height':size[1]})
+            assert_layout(page)
+            launcher = page.locator('#cheat-menu').bounding_box()
+            heading = page.locator('.logo').bounding_box()
+            assert launcher['y'] + launcher['height'] <= heading['y']
+        assert not errors, errors
+    finally:
+        close_context(context, engine)
+
+
 def viewports(browser, engine):
     for size in ((320, 568), (375, 667), (390, 844), (430, 932)):
         for language in ("fr", "en"):
@@ -500,7 +579,7 @@ def main():
                     print(f"UNAVAILABLE {engine}: {error}", flush=True)
                     continue
                 try:
-                    for check in (journey, purchases_and_files, gestures_and_tabs, storage_failures, offline, touch_controls, viewports, reference_comparisons):
+                    for check in (journey, purchases_and_files, gestures_and_tabs, storage_failures, offline, touch_controls, cheats, viewports, reference_comparisons):
                         started = time.monotonic()
                         try:
                             check(browser, engine)
