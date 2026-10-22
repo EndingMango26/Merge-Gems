@@ -62,6 +62,12 @@ Le parcours de déblocage a révélé un défaut du sélecteur de terres : il at
 
 La publication initiale est désormais effective : l’utilisateur a fusionné la PR1, choisi GitHub Actions et lancé le workflow manuel ; le site a été ouvert avec succès dans WebKit. Les mentions HTTP404 plus haut décrivent l’état initial de la première livraison.
 
+## Correction du générateur de caisses
+
+Branche `fix/crate-generator-timer`, basée sur le `main` `724620a` qui inclut le menu triche. Différences corrigées : PLEIN affiché trop tôt, générateur dessiné rempli en permanence, badge à deux chiffres rogné et compteur pouvant remonter si l’horloge recule. Le compte à rebours reste visible sur plateau plein et la jauge suit le temps réel ; une caisse prête est retenue à échéance et livrée lorsqu’une fusion libère une case. La conservation de cette caisse est une déduction provisoire explicitée dans `crate-timer-analysis.md`. Les durées10/20s et5s/appui restent issues de sources secondaires, et Aztec20s reste provisoire. Sauvegardes v2 compatibles sans remplacement de partie.
+
+Validation de cette correction : **64 tests unitaires et 20 scénarios Chromium/WebKit réussis**, TypeScript et compilation valides, cache `930b7e55f93ab5352b0a`. Captures de la jauge inspectées ; aucun essai sur iPhone physique. Les durées numériques n’ont pas été modifiées faute de nouvelle preuve fiable.
+
 ## Reprendre
 
 Lire d’abord `reference-analysis.md`, `src/data/rules.ts`, `asset-inventory.md` et `verification.md`. Lancer `npm ci`, `npm test`, `npm run build`, puis le parcours navigateur. Toute nouvelle valeur doit porter sa source et son statut ; un test interne vert ne confirme pas sa fidélité historique.

@@ -102,11 +102,23 @@ function firstEmpty(world: WorldState): number {
   );
 }
 
+/** The countdown continues on a full board; FULL means its crate is ready. */
+export function getCrateTimer(world: WorldState, now: number) {
+  const effectiveNow = Math.max(now, world.lastAccruedAt);
+  const remainingMs = Math.max(0, world.nextCrateAt - effectiveNow);
+  return {
+    remainingMs,
+    seconds: Math.ceil(remainingMs / 1000),
+    ready: remainingMs === 0,
+    full: firstEmpty(world) < 0,
+  };
+}
+
 /**
  * All elapsed-time arithmetic is timestamp based; display frame rate is irrelevant.
  * Original absence caps are unknown: unlimited income and scheduled crate fill are
- * PROVISIONAL. Unopened crates produce no income. Missed drops on a full board are
- * skipped rather than queued, preserving phase and preventing a burst after merges.
+ * PROVISIONAL. Unopened crates produce no income. A full board holds one ready
+ * crate at zero; it does not restart the countdown or queue unlimited crates.
  */
 export function advance(
   state: GameState,
@@ -152,12 +164,9 @@ export function advance(
     ) {
       const target = firstEmpty(world);
       if (target < 0) {
-        world.nextCrateAt = Math.min(
-          RULES.maxTimestampMs,
-          world.nextCrateAt +
-            (Math.floor((effectiveNow - world.nextCrateAt) / interval) + 1) *
-              interval,
-        );
+        // Hold readiness at the last settled time. Once a slot is freed, the
+        // pending crate starts its next cycle from delivery, without a backlog.
+        world.nextCrateAt = effectiveNow;
         break;
       }
       world.cells[target] = { kind: "crate", rank: RULES.defaultCrateRank };
@@ -219,6 +228,7 @@ export function move(
   if (target === null) {
     world.cells[to] = source;
     world.cells[from] = null;
+    advance(state, world.lastAccruedAt);
     return "moved";
   }
   if (
@@ -242,6 +252,7 @@ export function move(
     world.level++;
   }
   state.tutorialStep = Math.max(state.tutorialStep, 2);
+  advance(state, world.lastAccruedAt);
   return "merged";
 }
 

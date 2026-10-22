@@ -16,6 +16,7 @@ import {
   xpToNextLevel,
   formatCoins,
   boostedCellIndices,
+  getCrateTimer,
   RULES,
 } from "./game/engine";
 import {
@@ -140,7 +141,7 @@ function shell() {
     <section class="playfield" aria-label="${worldName(state.activeWorld, state.settings.language)}"><div id="board" class="board"></div></section>
     <p id="tutorial" class="tutorial"></p>
     <footer class="controls"><div class="left-controls"><button id="collection" class="square teal" aria-label="${t("collection")}">${iconSvg("medal")}</button><button id="settings" class="square slate" aria-label="${t("settings")}">${iconSvg("settings")}</button></div>
-      <button id="generate" class="generator" aria-label="${t("generate")}"><span class="generator-art">${crateSvg(state.activeWorld)}</span><strong id="countdown"></strong><span class="tap-mark" aria-hidden="true">↓</span></button>
+      <button id="generate" class="generator" aria-label="${t("generate")}"><svg class="generator-frame" viewBox="0 0 120 120" aria-hidden="true"><path d="M25 5H95Q101 5 103 13L115 49L101 112Q100 116 93 116H27Q20 116 19 112L5 49L17 13Q19 5 25 5Z" fill="none" stroke="currentColor" stroke-width="3" stroke-dasharray="9 9" stroke-linecap="round"/></svg><span class="generator-outline" aria-hidden="true">${crateSvg(state.activeWorld)}</span><span class="generator-art" aria-hidden="true">${crateSvg(state.activeWorld)}</span><strong id="countdown"></strong></button>
       <button id="shop" class="shop-button pink" aria-label="${t("shop")}">${iconSvg("shop")}<span>${t("shop")}</span></button>
     </footer>
     <button id="update" class="update-banner" hidden></button>
@@ -209,10 +210,17 @@ function render() {
   progress.setAttribute("aria-valuenow", String(world.xp));
   progress.setAttribute("aria-valuemax", String(threshold));
   const count = unlockedCells(world.level);
-  const full = world.cells.slice(0, count).every(Boolean);
-  document.querySelector("#countdown")!.textContent = full
-    ? t("full")
-    : String(Math.max(0, Math.ceil((world.nextCrateAt - Date.now()) / 1000)));
+  const timer = getCrateTimer(world, Date.now());
+  const generator = document.querySelector<HTMLElement>("#generate")!;
+  const hiddenPercent = Math.min(
+    100,
+    (timer.remainingMs / RULES.crateIntervalMs[state.activeWorld]) * 100,
+  );
+  generator.style.setProperty("--crate-hidden", `${hiddenPercent}%`);
+  generator.dataset.ready = String(timer.ready);
+  generator.dataset.blocked = String(timer.full && timer.ready);
+  document.querySelector("#countdown")!.textContent =
+    timer.full && timer.ready ? t("full") : String(timer.seconds);
   const tut = document.querySelector<HTMLElement>("#tutorial")!;
   tut.textContent =
     state.tutorialStep < 4

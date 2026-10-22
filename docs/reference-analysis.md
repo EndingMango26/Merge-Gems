@@ -22,10 +22,10 @@ La cible de recherche est la période de lancement mondial d’avril 2018 et les
 | Initialisation | Six cases, deux pierres et une caisse ; zéro monnaie ; tutoriel en trois actions : **provisoire**, nouvelle partie originale non observée. |
 | XP | Quantité par fusion = rang obtenu (index zéro), **provisoire**. Seuils des niveaux2/6/8 =46/210/354 observés ; autres seuils interpolés/extrapolés provisoires. Paramètres dans `src/data/rules.ts`. |
 | Cases | Nombre = niveau+5, plafond24 : formule et plafond **provisoires** ; correspondent aux points observés7/11/13. Première case centrée lorsque nombre modulo3=1 ; forme correspondant aux captures2/4. |
-| Générateur | Gemland10s, Moonland20s, -5s/appui : sources secondaires. Aztec20s **provisoire**. Aucune accélération de démonstration. |
+| Générateur | Gemland10s, Moonland20s, -5s/appui : sources secondaires. Aztec20s **provisoire**. Compteur visible même sur plateau plein et jauge se remplissant depuis le bas : observés dans le trailer. État PLEIN à échéance et une caisse prête retenue : déduction provisoire. Voir `crate-timer-analysis.md`. |
 | Moonland | Ouverture Gemland8 selon guides ; bonus3×3 ×2 incluant la plus haute gemme, déduit visuellement. En cas d’égalité la première case est retenue : **provisoire**. |
 | Aztecland | Accès Gemland16 **provisoire** ; revenus rang8+ déduits ×5/4 ; lianes non implémentées faute de cadence établie. Ce monde n’est pas fidèle à ce stade. |
-| Absence | Revenu au taux des gemmes présentes, illimité sans plafond ; caisses jusqu’au plateau plein, événements ultérieurs perdus. Tout ce traitement détaillé est **provisoire** : existence du revenu hors connexion attestée par guides, plafond et caisses non établis. |
+| Absence | Revenu au taux des gemmes présentes, illimité sans plafond ; caisses jusqu’au plateau plein, puis une caisse prête retenue à zéro jusqu’à libération d’une case. Tout ce traitement détaillé est **provisoire** : existence du revenu hors connexion attestée par guides, plafond et caisses non établis. |
 | Geste invalide | Retour sans échange ni destruction ; dernier rang38 non fusionnable : **provisoire**. |
 | Cadeaux et succès | Existence confirmée, probabilités/seuils/récompenses inconnus. Non implémentés. Le bouton médaille ouvre ici la collection consultable, différence explicite. Aucun bonus gratuit inventé. |
 | Publicité et argent réel | Offres, ×2 publicitaire, roulette commerciale et sollicitations absents ; aucun SDK publicitaire/analytique. Boutique en pièces maintenue. |
@@ -268,3 +268,9 @@ Paysage lunaire bleu, cratères, ciel violet étoilé et horizon rose, trois gem
 ## Vérification technique assets redessinés
 
 Le module src/art.ts fournit gemSvg(worldId,rank), crateSvg(worldId), iconSvg(name), giftSvg(). Rangs hors bornes bornés à0..38 ; familles non vérifiées marquées provisoires dans docs/asset-inventory.md. 117 SVG Gemland/Moonland/Aztecland rendus sans erreur avec CairoSVG ; planche Gemland effectivement examinée. Icône installation propre rendue en PNG512/192/180. Aucune copie pixel des captures publiée.
+
+## Correction ciblée du timer
+
+Le générateur affichait immédiatement PLEIN et son image restait remplie en permanence ; ces deux comportements contredisaient les images successives du trailer officiel. Le badge continue désormais de décompter sur un plateau plein, pendant que le dessin se remplit du bas vers le haut. Le badge n’est plus rogné par la forme du bouton. Les calculs d’affichage utilisent la même borne d’horloge que le moteur.
+
+À échéance, le moteur conserve une seule caisse prête. Une fusion qui libère une case la reçoit et relance le délai depuis sa livraison, sans rattrapage illimité. Ce détail de reprise reste **déduit/provisoire**, car aucune séquence continue inspectée ne prouve sa règle complète dans le profil étendu. Les durées10/20s et le delta5s/appui restent qualifiés secondaires ; aucune autre durée n’a été inventée. L’amélioration2,5s mentionnée par le wiki reste indisponible faute de condition d’acquisition établie. Recherche détaillée : [crate-timer-analysis.md](crate-timer-analysis.md).

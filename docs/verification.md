@@ -2,9 +2,9 @@
 
 ## Résultat
 
-`npm test` : **59 tests réussis**, 24 moteur, 23 stockage et12menu triche. `npm run build` : TypeScript et Vite réussis. Les dépendances applicatives sont verrouillées dans `package-lock.json` ; les outils Python optionnels dans `requirements-browser.txt`.
+`npm test` : **64 tests réussis**, 29 moteur, 23 stockage et 12 menu triche. `npm run build` : TypeScript et Vite réussis. Les dépendances applicatives sont verrouillées dans `package-lock.json` ; les outils Python optionnels dans `requirements-browser.txt`.
 
-`python3 scripts/browser-check.py` : **18 scénarios réussis**, neuf dans Chromium154.0.8037.57 et neuf dans WebKit26.5. Le rapport brut est conservé dans [validation/browser-report.json](validation/browser-report.json). Ces tests ont été exécutés sur le build de cache `4cad4471c230df059ea1`, sous le préfixe `/Merge-Gems/`.
+`python3 scripts/browser-check.py` : **20 scénarios réussis**, dix dans Chromium 154.0.8037.57 et dix dans WebKit 26.5. Le rapport brut est conservé dans [validation/browser-report.json](validation/browser-report.json). Ces tests ont été exécutés sur le build de cache `930b7e55f93ab5352b0a`, sous le préfixe `/Merge-Gems/`.
 
 **Aucun véritable iPhone n’a été testé.** WebKit WPE et l’émulation tactile ne prouvent ni l’installation Safari réelle, ni le sélecteur Fichiers d’iOS, ni la rétention des données par iOS.
 
@@ -59,3 +59,9 @@ Le script `scripts/fetch-reference-presskit.py` a été exécuté : tailles/CRC 
 ## Ajout du menu triche
 
 L’option est testée désactivée par défaut sur une ancienne sauvegarde, activée depuis les réglages puis restaurée après rechargement, export et import. Les boutons ajoutent les montants exacts en millièmes dans le moteur, n’écrasent aucune gemme et appliquent les changements à la terre courante. Les limites, refus d’action sans activation, plafond monétaire, niveau maximal et absence de revenu rétroactif sont couverts par12tests spécifiques. Le navigateur vérifie les quatre actions, les traductions, le masquage et les quatre tailles du plateau après activation. Le sélecteur de terres a aussi été corrigé et testé par un aller-retour Gemland→Moonland→Gemland. Aucun essai sur iPhone physique.
+
+## Correction du compteur de caisses
+
+Cinq tests moteur supplémentaires vérifient le décompte sur plateau plein, la conservation d’une seule caisse prête, sa livraison après fusion, l’absence de livraison anticipée, l’horloge reculée et le délai propre à Moonland. Les tests navigateur pilotent la date sans attendre réellement dix ou vingt secondes : jauge à moitié remplie, PLEIN à échéance, fusion, nouveau cycle, accélération par appui et rechargement sans double livraison.
+
+Les captures de notre générateur ont été inspectées dans Chromium et WebKit : [Gemland à mi-parcours](screenshots/timer-gemland-half.png) et [Moonland plein](screenshots/timer-moonland-full.png). Le trailer officiel montre le décompte continu sur plateau plein et le remplissage depuis le bas. La conservation d’une caisse prête reste **déduite/provisoire** ; les durées 10/20 secondes et la réduction de 5 secondes par appui restent des valeurs de sources secondaires, sans nouvelle confirmation numérique. Voir [l’analyse ciblée](crate-timer-analysis.md).

@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import copy
+from datetime import datetime, timezone
 import json
 import os
 from pathlib import Path
@@ -413,6 +414,72 @@ def touch_controls(browser, engine):
         close_context(context, engine)
 
 
+def generator_timer(browser, engine):
+    for land, interval in (('gemland', 10_000), ('moonland', 20_000)):
+        state = fixture()
+        now = state['savedAt']
+        state['activeWorld'] = land
+        state['worlds']['gemland']['level'] = 8 if land == 'moonland' else 1
+        world = state['worlds'][land]
+        world['nextCrateAt'] = now + interval
+        world['cells'][:6] = [{'kind':'gem','rank':0,'bornAt':now} for _ in range(6)]
+        context = browser.new_context(viewport={'width':390 if land=='gemland' else 320,'height':844 if land=='gemland' else 568},locale='fr-FR')
+        context.add_init_script(f'if (!localStorage.getItem({json.dumps(SAVE_KEY)})) localStorage.setItem({json.dumps(SAVE_KEY)}, {json.dumps(json.dumps(state))});')
+        page = context.new_page()
+        errors = []
+        page.on('pageerror', lambda error: errors.append(str(error)))
+        # Fixed Date, real browser timers: no slow waits and no dependence on FPS.
+        def set_time(timestamp_ms):
+            # ISO strings avoid second/millisecond conversion and float rounding.
+            instant = datetime.fromtimestamp(timestamp_ms//1000, timezone.utc)
+            page.clock.set_fixed_time(instant.strftime("%Y-%m-%dT%H:%M:%S") + f".{timestamp_ms%1000:03d}Z")
+        set_time(now)
+        def expect_countdown(text):
+            page.wait_for_function('text => document.querySelector("#countdown").textContent === text',arg=str(text))
+        try:
+            page.goto(BASE); writer_ready(page)
+            expect_countdown(interval//1000)
+            assert page.locator('#generate').get_attribute('data-ready') == 'false'
+            set_time(now+1000)
+            expect_countdown(interval//1000-1)
+            set_time(now+interval//2)
+            expect_countdown(interval//2000)
+            assert float(page.locator('#generate').evaluate('el=>el.style.getPropertyValue("--crate-hidden").replace("%", "")')) == 50
+            page.wait_for_function('Math.abs(parseFloat(getComputedStyle(document.querySelector(".generator-art")).clipPath.slice(6)) - 50) < .05')
+            page.screenshot(path=RESULTS/f'{engine}-timer-{land}-half.png')
+            set_time(now+interval)
+            expect_countdown('PLEIN')
+            assert page.locator('#generate').get_attribute('data-blocked') == 'true'
+            page.screenshot(path=RESULTS/f'{engine}-timer-{land}-full.png')
+            assert page.locator('#board .crate').count() == 0
+            held_at = now+interval*6
+            set_time(held_at)
+            expect_countdown('PLEIN')
+            # A ready crate arrives immediately after a merge; only one is held.
+            drag(page,'[data-cell="0"]','[data-cell="1"]')
+            page.locator('#continue').wait_for();page.locator('#continue').click()
+            expect_countdown(interval//1000)
+            assert page.locator('#board .crate').count() == 1
+            drag(page,'[data-cell="2"]','[data-cell="3"]')
+            assert page.locator('#board .crate').count() == 1
+            assert page.locator('#board .empty').count() == 1
+            page.locator('#generate').click()
+            expect_countdown(interval//1000-5)
+            set_time(held_at+interval-5001)
+            expect_countdown(1)
+            assert page.locator('#board .crate').count() == 1
+            set_time(held_at+interval-5000)
+            expect_countdown(interval//1000)
+            assert page.locator('#board .crate').count() == 2
+            page.reload();writer_ready(page)
+            assert page.locator('#board .crate').count() == 2
+            expect_countdown(interval//1000)
+            assert_layout(page)
+            assert not errors, errors
+        finally:
+            close_context(context,engine)
+
+
 def cheats(browser, engine):
     # The legacy v2 fixture has no cheats field: loading it must opt out.
     context, page, errors = new_page(browser, state=fixture())
@@ -579,7 +646,7 @@ def main():
                     print(f"UNAVAILABLE {engine}: {error}", flush=True)
                     continue
                 try:
-                    for check in (journey, purchases_and_files, gestures_and_tabs, storage_failures, offline, touch_controls, cheats, viewports, reference_comparisons):
+                    for check in (journey, purchases_and_files, gestures_and_tabs, storage_failures, offline, touch_controls, generator_timer, cheats, viewports, reference_comparisons):
                         started = time.monotonic()
                         try:
                             check(browser, engine)

@@ -14,112 +14,124 @@
       "browser": "chromium",
       "check": "journey",
       "status": "passed",
-      "seconds": 2.15
+      "seconds": 1.99
     },
     {
       "browser": "chromium",
       "check": "purchases_and_files",
       "status": "passed",
-      "seconds": 1.31
+      "seconds": 1.22
     },
     {
       "browser": "chromium",
       "check": "gestures_and_tabs",
       "status": "passed",
-      "seconds": 3.16
+      "seconds": 3.23
     },
     {
       "browser": "chromium",
       "check": "storage_failures",
       "status": "passed",
-      "seconds": 3.18
+      "seconds": 3.77
     },
     {
       "browser": "chromium",
       "check": "offline",
       "status": "passed",
-      "seconds": 1.02
+      "seconds": 1.04
     },
     {
       "browser": "chromium",
       "check": "touch_controls",
       "status": "passed",
-      "seconds": 1.24
+      "seconds": 1.41
+    },
+    {
+      "browser": "chromium",
+      "check": "generator_timer",
+      "status": "passed",
+      "seconds": 4.76
     },
     {
       "browser": "chromium",
       "check": "cheats",
       "status": "passed",
-      "seconds": 2.44
+      "seconds": 2.51
     },
     {
       "browser": "chromium",
       "check": "viewports",
       "status": "passed",
-      "seconds": 8.9
+      "seconds": 9.13
     },
     {
       "browser": "chromium",
       "check": "reference_comparisons",
       "status": "passed",
-      "seconds": 1.54
+      "seconds": 1.73
     },
     {
       "browser": "webkit",
       "check": "journey",
       "status": "passed",
-      "seconds": 6.53
+      "seconds": 6.06
     },
     {
       "browser": "webkit",
       "check": "purchases_and_files",
       "status": "passed",
-      "seconds": 5.67
+      "seconds": 5.29
     },
     {
       "browser": "webkit",
       "check": "gestures_and_tabs",
       "status": "passed",
-      "seconds": 7.6
+      "seconds": 7.12
     },
     {
       "browser": "webkit",
       "check": "storage_failures",
       "status": "passed",
-      "seconds": 11.23
+      "seconds": 9.85
     },
     {
       "browser": "webkit",
       "check": "offline",
       "status": "passed",
-      "seconds": 2.46
+      "seconds": 2.29
     },
     {
       "browser": "webkit",
       "check": "touch_controls",
       "status": "passed",
-      "seconds": 1.01
+      "seconds": 1.09
+    },
+    {
+      "browser": "webkit",
+      "check": "generator_timer",
+      "status": "passed",
+      "seconds": 10.62
     },
     {
       "browser": "webkit",
       "check": "cheats",
       "status": "passed",
-      "seconds": 11.11
+      "seconds": 10.3
     },
     {
       "browser": "webkit",
       "check": "viewports",
       "status": "passed",
-      "seconds": 24.06
+      "seconds": 23.65
     },
     {
       "browser": "webkit",
       "check": "reference_comparisons",
       "status": "passed",
-      "seconds": 2.29
+      "seconds": 2.38
     }
   ],
   "launchFailures": {},
-  "buildCacheVersion": "4cad4471c230df059ea1",
+  "buildCacheVersion": "930b7e55f93ab5352b0a",
   "verifiedDate": "2026-10-22"
 }
