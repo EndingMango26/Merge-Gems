@@ -38,3 +38,7 @@ npm run preview
 ```
 
 L'aperçu est accessible sous `/Merge-Gems/`. `npm run dev` sert le développement sans constituer une preuve d'installation hors connexion. Les vérifications navigateur et l'appareil réellement testé doivent être indiqués dans le rapport de tests ; Chromium ou WebKit ne prouvent pas une exécution sur un véritable iPhone.
+
+## Limites techniques extrêmes
+
+Les sauvegardes acceptent jusqu’à300chiffres par montant et4000achats par rang (limites techniques documentées, non des règles originales). Au-delà des suffixes attestés, l’affichage passe en notation scientifique à trois chiffres significatifs ; cette présentation est provisoire et les calculs conservent la valeur entière. Les règles d’XP non observées, le plafond24cases et les revenus d’absence restent explicitement provisoires dans `rules.ts`.

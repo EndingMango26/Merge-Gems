@@ -18,7 +18,7 @@ La cible de recherche est la période de lancement mondial d’avril 2018 et les
 | Fusion et plateau | Deux gemmes identiques produisent le rang suivant ; trois colonnes. Confirmé officiel et visuel. |
 | Catalogue | 39 rangs dans chacune des trois terres. Noms et tables W1 ; de nombreuses formes restent provisoires. |
 | Monnaie | Montants W1 divisés par 2,5 secondes, déduit et corroboré par trois états chiffrés. Calculs entiers en millièmes. |
-| Prix | W1 transcrit sans rééquilibrage, y compris prix du rang26 et exception Silver. L’arrondi supérieur au millième par achat est provisoire. |
+| Prix | W1 transcrit sans rééquilibrage, y compris prix du rang26 et exception Silver. Développer les montants abrégés en entiers et arrondir au millième est provisoire ; 1.73k ne prouve pas 1730 exact. |
 | Initialisation | Six cases, deux pierres et une caisse ; zéro monnaie ; tutoriel en trois actions : **provisoire**, nouvelle partie originale non observée. |
 | XP | Quantité par fusion = rang obtenu (index zéro), **provisoire**. Seuils des niveaux2/6/8 =46/210/354 observés ; autres seuils interpolés/extrapolés provisoires. Paramètres dans `src/data/rules.ts`. |
 | Cases | Nombre = niveau+5, plafond24 : formule et plafond **provisoires** ; correspondent aux points observés7/11/13. Première case centrée lorsque nombre modulo3=1 ; forme correspondant aux captures2/4. |
@@ -30,7 +30,7 @@ La cible de recherche est la période de lancement mondial d’avril 2018 et les
 | Cadeaux et succès | Existence confirmée, probabilités/seuils/récompenses inconnus. Non implémentés. Le bouton médaille ouvre ici la collection consultable, différence explicite. Aucun bonus gratuit inventé. |
 | Publicité et argent réel | Offres, ×2 publicitaire, roulette commerciale et sollicitations absents ; aucun SDK publicitaire/analytique. Boutique en pièces maintenue. |
 | Graphismes | Redessins vectoriels indépendants. Catalogue partiellement provisoire ; aucune redistribution des captures ou ressources de l’application. |
-| Animations et sons | Animations courtes de remplacement ; mouvement original non observé. Bips synthétiques optionnels désactivés par défaut, aucune musique originale. |
+| Animations et sons | Feedbacks visuels d’après images successives du trailer officiel (profil court) ; durée/interpolation provisoires. Bips synthétiques optionnels désactivés par défaut, aucune musique originale. |
 | Paramètres et langues | Menu web FR/EN, sauvegarde export/import et installation : adaptation pour Safari ; écran original des paramètres non retrouvé. |
 
 Les règles normales permettent de jouer sans offre commerciale. Aucune source lue ne prouve un verrou payant obligatoire. Retirer les succès et cadeaux peut toutefois changer la vitesse de progression : cet écart reste ouvert, sans compensation économique inventée.
@@ -43,7 +43,16 @@ Le terminal, Node/npm, Git et Chromium fonctionnent. Le réseau du terminal dema
 
 Aucun APK/IPA de provenance légitime exploitable n’a été obtenu. Aucun moteur original n’a donc été identifié, aucun code n’a été extrait, **REA n’a pas été installé**. https://github.com/morluto/rea est un outil potentiel pour un futur fichier vérifié, pas une source de Merge Gems!.
 
-Un résultat Giga présenté comme un trailer a conduit à un MP4 public de 80secondes. Après extraction et inspection d’images, il s’agit de **The Elder Scrolls Online: Summerset** : source rejetée, aucune mécanique Merge Gems! n’en est tirée. Les résultats YouTube ne constituent pas des vidéos regardées.
+Un résultat Giga présenté comme un trailer a conduit à un MP4 public de 80secondes. Après extraction et inspection d’images, il s’agit de **The Elder Scrolls Online: Summerset** : source rejetée, aucune mécanique Merge Gems! n’en est tirée. Les résultats YouTube ne constituent pas des vidéos regardées. Le vrai trailer a ensuite été retrouvé dans le kit presse officiel : voir la section suivante.
+
+
+## Mise à jour : kit presse officiel et deux profils incompatibles
+
+L’archive publique https://www.gram.gs/assets/GramGames_PressKit.zip a livré une vidéo originale de25s, réellement inspectée par images successives extraites. Détails, SHA256, temps et observations : [analyse vidéo](reference-video-analysis.md). Le téléchargement standard par segments a validé CRC et tailles ; aucun fichier d’application ni REA utilisé. La vidéo, le logo et l’icône originaux restent hors des fichiers distribués, faute de licence de réutilisation dans ce jeu.
+
+**Profil court du trailer** : Stone→Silver→Gold Bar→Double Gold→Sapphire, avec Silver1k/1.73k,GoldBar4.5k,DoubleGold12k,Sapphire35k ; XPniveau1/40,2/46,7/276. **Profil étendu retenu** : Stone→Silver→Great Silver→Gold Bar→Double Gold→Triple Gold→Sapphire, table39rangs et captures designer. Les noms associés aux prix/revenus sont décalés : ces profils ne sont pas fusionnés. Le seuil1=30 actuel et le seuil7=277 restent provisoires du profil étendu, pas des valeurs originales confirmées.
+
+Des apparences communes par nom (Stone,Ruby,Emerald) et feedbacks visuels ont été précisés grâce au trailer : halo cyan des gemmes compatibles, flash de fusion/ouverture, étoileXP montant vers la barre, case apparaissant au déblocage, panneau boutique rose/liste claire/boutonsverts, découverte rubanrose/carteverte. Leur durée/interpolation restent des choix de reconstruction ; le montage promotionnel paraît accéléré. Les chiffres/rangs du profil court ne corrigent pas l’économie étendue. Aucun menu paramètres ou collection n’a été vu ; la collection consultable reste une adaptation web. La piste audio n’a pas pu être écoutée avec les outils disponibles.
 
 
 ---

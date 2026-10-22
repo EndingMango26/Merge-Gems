@@ -1,2 +1,2 @@
-import { defineConfig } from 'vite';
-export default defineConfig({ base: '/Merge-Gems/' });
+import { defineConfig } from "vite";
+export default defineConfig({ base: "/Merge-Gems/" });

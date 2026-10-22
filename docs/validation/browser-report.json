@@ -1,0 +1,113 @@
+{
+  "url": "http://127.0.0.1:4173/Merge-Gems/",
+  "realIPhone": false,
+  "offlineStrategy": {
+    "chromium": "Playwright context offline",
+    "webkit": "HTTP origin stopped; WPE offline mode rejects navigation internally"
+  },
+  "browserVersions": {
+    "chromium": "154.0.8037.57",
+    "webkit": "26.5"
+  },
+  "checks": [
+    {
+      "browser": "chromium",
+      "check": "journey",
+      "status": "passed",
+      "seconds": 1.79
+    },
+    {
+      "browser": "chromium",
+      "check": "purchases_and_files",
+      "status": "passed",
+      "seconds": 1.23
+    },
+    {
+      "browser": "chromium",
+      "check": "gestures_and_tabs",
+      "status": "passed",
+      "seconds": 3.05
+    },
+    {
+      "browser": "chromium",
+      "check": "storage_failures",
+      "status": "passed",
+      "seconds": 3.16
+    },
+    {
+      "browser": "chromium",
+      "check": "offline",
+      "status": "passed",
+      "seconds": 0.97
+    },
+    {
+      "browser": "chromium",
+      "check": "touch_controls",
+      "status": "passed",
+      "seconds": 1.21
+    },
+    {
+      "browser": "chromium",
+      "check": "viewports",
+      "status": "passed",
+      "seconds": 8.6
+    },
+    {
+      "browser": "chromium",
+      "check": "reference_comparisons",
+      "status": "passed",
+      "seconds": 1.42
+    },
+    {
+      "browser": "webkit",
+      "check": "journey",
+      "status": "passed",
+      "seconds": 6.73
+    },
+    {
+      "browser": "webkit",
+      "check": "purchases_and_files",
+      "status": "passed",
+      "seconds": 5.8
+    },
+    {
+      "browser": "webkit",
+      "check": "gestures_and_tabs",
+      "status": "passed",
+      "seconds": 7.93
+    },
+    {
+      "browser": "webkit",
+      "check": "storage_failures",
+      "status": "passed",
+      "seconds": 11.39
+    },
+    {
+      "browser": "webkit",
+      "check": "offline",
+      "status": "passed",
+      "seconds": 2.4
+    },
+    {
+      "browser": "webkit",
+      "check": "touch_controls",
+      "status": "passed",
+      "seconds": 0.92
+    },
+    {
+      "browser": "webkit",
+      "check": "viewports",
+      "status": "passed",
+      "seconds": 26.19
+    },
+    {
+      "browser": "webkit",
+      "check": "reference_comparisons",
+      "status": "passed",
+      "seconds": 2.37
+    }
+  ],
+  "launchFailures": {},
+  "buildCacheVersion": "913f5843821af8731d3c",
+  "verifiedDate": "2026-10-22"
+}
