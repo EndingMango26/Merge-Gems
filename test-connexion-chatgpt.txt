@@ -1,4 +1,0 @@
-Test d'écriture ChatGPT vers GitHub
-Dépôt : EndingMango26/Merge-Gems
-Date : 2026-10-22
-Ce fichier confirme que la création d'un fichier depuis ChatGPT fonctionne.
