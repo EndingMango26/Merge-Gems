@@ -38,6 +38,12 @@ Appuyer sur le générateur accélère les caisses. Toucher une caisse l’ouvre
 
 Dans **Paramètres**, changer la langue, exporter un JSON dans Fichiers ou importer une partie. Un import ou une nouvelle partie exige une confirmation. Un fichier invalide ne remplace pas la partie. Une erreur de stockage est signalée et ne crée jamais silencieusement une nouvelle sauvegarde. Exportez régulièrement : Safari, l’application installée et un ordinateur ne sont pas synchronisés.
 
+## Menu triche facultatif
+
+Dans **Paramètres**, activer **Menu triche**. Le bouton **Triche** apparaît alors en haut à gauche du jeu. Il permet d’ajouter des pièces à la terre actuelle, de créer une gemme choisie sur une case libre, de gagner un niveau ou de débloquer les terres. L’option est désactivée par défaut et conservée dans la sauvegarde, l’export et l’import. La désactiver masque le menu ; les changements déjà appliqués à la partie sont conservés.
+
+Cette option est un ajout demandé pour cette version personnelle ; elle n’est pas une mécanique confirmée de l’original.
+
 ## Documentation
 
 - [Sources, preuves, inconnues et paramètres provisoires](docs/reference-analysis.md)

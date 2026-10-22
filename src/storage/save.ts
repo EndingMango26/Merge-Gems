@@ -114,7 +114,9 @@ export function validateGame(value: unknown): GameState {
   const settings = object(item.settings);
   if (
     (settings.language !== "fr" && settings.language !== "en") ||
-    typeof settings.sound !== "boolean"
+    typeof settings.sound !== "boolean" ||
+    (settings.cheatsEnabled !== undefined &&
+      typeof settings.cheatsEnabled !== "boolean")
   )
     throw new SaveError("invalid-save");
   const worlds = object(item.worlds);
@@ -129,7 +131,12 @@ export function validateGame(value: unknown): GameState {
       moonland: world(worlds.moonland),
       aztecland: world(worlds.aztecland),
     },
-    settings: { language: settings.language, sound: settings.sound },
+    settings: {
+      language: settings.language,
+      sound: settings.sound,
+      // v2 saves written before the cheat option remain valid and opt out.
+      cheatsEnabled: settings.cheatsEnabled === true,
+    },
     tutorialStep: integer(item.tutorialStep, 0, 10),
   };
 }

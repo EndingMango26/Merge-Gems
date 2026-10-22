@@ -25,6 +25,8 @@ Des exécutables configurés peuvent être sélectionnés avec `MERGE_GEMS_CHROM
 - Dimensions `320×568`, `375×667`, `390×844` et `430×932`, en français et en anglais : absence de débordement de la page, boutons principaux dans l'écran et captures du plateau et des paramètres.
 - États de comparaison en anglais : Gemland niveau 6 et Moonland niveau 2 au ratio `360×640`, d'après les captures du portfolio répertoriées dans l'analyse de référence. Le cadeau aléatoire de la capture Gemland est laissé vide : ce système n'est pas reproduit avec une probabilité inventée.
 
+- Menu triche : désactivation initiale sur anciennes sauvegardes, activation dans les réglages, position du bouton en haut à gauche, conservation au rechargement et export/import, ajout de monnaie et de gemme, niveau, déblocage et changement de terres, traduction FR/EN et masquage sans perte des changements.
+
 ## Résultats et limites
 
 Le résultat du dernier lancement est écrit dans `test-results/browser-report.json`, avec les versions des navigateurs, chaque scénario et son statut. Les captures, JSON exportés et diagnostics d'échec sont conservés dans `test-results/`, ignoré par Git. Un scénario en échec ou un navigateur indisponible fait terminer le script avec un code non nul.

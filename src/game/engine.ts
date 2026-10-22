@@ -91,7 +91,7 @@ export function createGame(now: number, language: Language = "fr"): GameState {
     savedAt: now,
     activeWorld: "gemland",
     worlds,
-    settings: { language, sound: false },
+    settings: { language, sound: false, cheatsEnabled: false },
     tutorialStep: 0,
   };
 }

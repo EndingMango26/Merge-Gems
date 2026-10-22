@@ -52,6 +52,16 @@ Les publicités et paiements réels restent exclus par décision utilisateur. La
 
 La cible `https://EndingMango26.github.io/Merge-Gems/` ne doit pas être présentée comme publiée avant un déploiement réussi et une vérification de l’URL. L’utilisateur activera Pages lui-même. Voir `install-iphone.md`.
 
+## Ajout demandé : menu triche
+
+Branche `feature/cheat-menu`, basée sur le `main` fusionné `aea70f1`. Interrupteur en premier dans les paramètres, désactivé par défaut, bouton en haut à gauche après activation. Actions : +1k/+1m/+1b pièces dans la terre courante, ajout d’une gemme choisie si place libre, niveau+1, déblocage des terres. Paramètre sauvegardé et exporté ; les anciens fichiers v2 sans ce champ restent valides et désactivent la triche. Aucun prix ou délai normal modifié. Il s’agit d’une différence volontaire demandée par l’utilisateur, pas d’une règle originale.
+
+Validation de cet ajout :59tests unitaires et18scénarios Chromium/WebKit réussis, compilation et TypeScript valides. Les anciennes mesures46/16plus haut décrivent la première livraison.
+
+Le parcours de déblocage a révélé un défaut du sélecteur de terres : il attachait les clics à tous les attributs `data-world`, dont le fond et les SVG. La recherche est maintenant limitée aux boutons du menu de terres, ce qui évite sa fermeture immédiate.
+
+La publication initiale est désormais effective : l’utilisateur a fusionné la PR1, choisi GitHub Actions et lancé le workflow manuel ; le site a été ouvert avec succès dans WebKit. Les mentions HTTP404 plus haut décrivent l’état initial de la première livraison.
+
 ## Reprendre
 
 Lire d’abord `reference-analysis.md`, `src/data/rules.ts`, `asset-inventory.md` et `verification.md`. Lancer `npm ci`, `npm test`, `npm run build`, puis le parcours navigateur. Toute nouvelle valeur doit porter sa source et son statut ; un test interne vert ne confirme pas sa fidélité historique.

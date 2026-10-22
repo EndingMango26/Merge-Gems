@@ -31,6 +31,7 @@ La cible de recherche est la période de lancement mondial d’avril 2018 et les
 | Publicité et argent réel | Offres, ×2 publicitaire, roulette commerciale et sollicitations absents ; aucun SDK publicitaire/analytique. Boutique en pièces maintenue. |
 | Graphismes | Redessins vectoriels indépendants. Catalogue partiellement provisoire ; aucune redistribution des captures ou ressources de l’application. |
 | Animations et sons | Feedbacks visuels d’après images successives du trailer officiel (profil court) ; durée/interpolation provisoires. Bips synthétiques optionnels désactivés par défaut, aucune musique originale. |
+| Menu triche facultatif | Ajout demandé par l’utilisateur le22octobre2026 : option dans les réglages, bouton en haut à gauche, ajout de pièces/gemmes/niveaux et déblocage des terres. Désactivé par défaut, conservé en sauvegarde ; cette fonction n’est pas attribuée à l’original. |
 | Paramètres et langues | Menu web FR/EN, sauvegarde export/import et installation : adaptation pour Safari ; écran original des paramètres non retrouvé. |
 
 Les règles normales permettent de jouer sans offre commerciale. Aucune source lue ne prouve un verrou payant obligatoire. Retirer les succès et cadeaux peut toutefois changer la vitesse de progression : cet écart reste ouvert, sans compensation économique inventée.

@@ -51,12 +51,25 @@ function fixture(): GameState {
     savedAt: 0,
     activeWorld: "gemland",
     worlds: { gemland: world(), moonland: world(), aztecland: world() },
-    settings: { language: "fr", sound: false },
+    settings: { language: "fr", sound: false, cheatsEnabled: false },
     tutorialStep: 0,
   };
 }
 
 describe("versioned local saves", () => {
+  it("loads existing saves with cheats disabled and preserves the enabled preference", () => {
+    const oldSave = JSON.parse(JSON.stringify(fixture()));
+    delete oldSave.settings.cheatsEnabled;
+    expect(importGame(JSON.stringify(oldSave)).settings.cheatsEnabled).toBe(
+      false,
+    );
+    const enabled = fixture();
+    enabled.settings.cheatsEnabled = true;
+    expect(importGame(exportGame(enabled)).settings.cheatsEnabled).toBe(true);
+    expect(importGame(exportGame(enabled)).worlds).toEqual(enabled.worlds);
+    oldSave.settings.cheatsEnabled = "true";
+    expect(() => importGame(JSON.stringify(oldSave))).toThrow("invalid-save");
+  });
   it("round-trips all exact large values, clocks, settings and both export formats", () => {
     const game = fixture();
     expect(importGame(exportGame(game))).toEqual(game);

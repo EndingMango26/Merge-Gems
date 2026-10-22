@@ -1222,3 +1222,78 @@ summary::before {
 details[open] summary::before {
   transform: rotate(90deg);
 }
+
+.cheat-toolbar {
+  display: flex;
+  align-items: center;
+  flex: none;
+  height: 44px;
+  margin-bottom: 3px;
+}
+.cheat-launcher {
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  min-height: 40px;
+  padding: 7px 12px;
+  background: #30494e;
+  border: 2px solid #a9c77c;
+  border-radius: 12px;
+  box-shadow: 0 3px 0 #23373b;
+  font-size: 13px;
+  font-weight: 800;
+}
+.cheat-launcher svg {
+  width: 23px;
+  height: 23px;
+}
+.toggle-track {
+  display: block;
+  flex: none;
+  width: 46px;
+  height: 27px;
+  padding: 3px;
+  background: #62797d;
+  border-radius: 20px;
+}
+.toggle-track > span {
+  display: block;
+  width: 21px;
+  height: 21px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.15s;
+}
+.cheat-setting[aria-checked="true"] .toggle-track {
+  background: #45ac6b;
+}
+.cheat-setting[aria-checked="true"] .toggle-track > span {
+  transform: translateX(19px);
+}
+.cheat-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+.cheat-actions p {
+  margin: 0;
+  font-weight: 700;
+  font-size: 14px;
+}
+.cheat-coin-actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+.cheat-coin-actions button {
+  min-width: 0;
+  padding-inline: 5px !important;
+}
+.cheat-gem-row {
+  align-items: stretch;
+  flex-direction: column;
+}
+.cheat-gem-row select {
+  width: 100%;
+  max-width: 100%;
+}

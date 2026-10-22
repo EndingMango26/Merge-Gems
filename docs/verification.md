@@ -2,9 +2,9 @@
 
 ## Résultat
 
-`npm test` : **46 tests réussis**, 24 moteur et 22 stockage. `npm run build` : TypeScript et Vite réussis. Les dépendances applicatives sont verrouillées dans `package-lock.json` ; les outils Python optionnels dans `requirements-browser.txt`.
+`npm test` : **59 tests réussis**, 24 moteur, 23 stockage et12menu triche. `npm run build` : TypeScript et Vite réussis. Les dépendances applicatives sont verrouillées dans `package-lock.json` ; les outils Python optionnels dans `requirements-browser.txt`.
 
-`python3 scripts/browser-check.py` : **16 scénarios réussis**, huit dans Chromium154.0.8037.57 et huit dans WebKit26.5. Le rapport brut est conservé dans [validation/browser-report.json](validation/browser-report.json). Ces tests ont été exécutés sur le build de cache `913f5843821af8731d3c`, sous le préfixe `/Merge-Gems/`.
+`python3 scripts/browser-check.py` : **18 scénarios réussis**, neuf dans Chromium154.0.8037.57 et neuf dans WebKit26.5. Le rapport brut est conservé dans [validation/browser-report.json](validation/browser-report.json). Ces tests ont été exécutés sur le build de cache `4cad4471c230df059ea1`, sous le préfixe `/Merge-Gems/`.
 
 **Aucun véritable iPhone n’a été testé.** WebKit WPE et l’émulation tactile ne prouvent ni l’installation Safari réelle, ni le sélecteur Fichiers d’iOS, ni la rétention des données par iOS.
 
@@ -55,3 +55,7 @@ npm run test:e2e
 [Détails des outils et du parcours navigateur](browser-verification.md). Les captures générées à chaque lancement restent dans `test-results/` (ignoré par Git). Les deux captures sélectionnées ci-dessus représentent notre jeu et sont conservées pour la revue.
 
 Le script `scripts/fetch-reference-presskit.py` a été exécuté : tailles/CRC et SHA256 des trois références officielles correspondent au registre. Il refuse d’écrire dans le dépôt. Aucun original propriétaire n’entre dans le build. Les tests internes n’établissent pas les valeurs historiques encore provisoires.
+
+## Ajout du menu triche
+
+L’option est testée désactivée par défaut sur une ancienne sauvegarde, activée depuis les réglages puis restaurée après rechargement, export et import. Les boutons ajoutent les montants exacts en millièmes dans le moteur, n’écrasent aucune gemme et appliquent les changements à la terre courante. Les limites, refus d’action sans activation, plafond monétaire, niveau maximal et absence de revenu rétroactif sont couverts par12tests spécifiques. Le navigateur vérifie les quatre actions, les traductions, le masquage et les quatre tailles du plateau après activation. Le sélecteur de terres a aussi été corrigé et testé par un aller-retour Gemland→Moonland→Gemland. Aucun essai sur iPhone physique.
