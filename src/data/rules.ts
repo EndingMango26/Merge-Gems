@@ -1,0 +1,1136 @@
+/** Evidence ledger: see docs/reference-analysis.md. Secondary wiki amounts are not extracted game code. */
+export const RULES = {
+  maxRank: 38,
+  maxLevel: 99, // Technical bound, original level cap unknown
+  maxPurchasesPerRank: 4000, // Technical bound; prices stay below save currency precision
+  maxCurrencyDigits: 300,
+  maxCurrencyMilli: 10n ** 300n - 1n,
+  maxTimestampMs: 8_640_000_000_000_000, // JavaScript Date boundary
+  maxPurchasableRank: 34, // Highest rank 38 minus four
+  shopRankDistance: 4,
+  silverFirstPriceMilli: 1730000n, // W1: displayed next price 1.73k
+  initialGemRanks: [0, 0] as readonly number[], // PROVISIONAL tutorial arrangement
+  initialCrateRanks: [0] as readonly number[], // PROVISIONAL tutorial arrangement
+  defaultCrateRank: 0, // W1
+  moonBoostMultiplier: 2, // wiki and designer-2 total
+  moonBoostRadius: 1, // square 3x3
+  // Visible XP denominators: level 2=46, 6=210, 8=354. Other entries provisional.
+  xpThresholds: [0, 30, 46, 76, 112, 157, 210, 277, 354] as readonly number[],
+  xpThresholdGrowthAfterEight: 1.3, // PROVISIONAL, not an original value
+  xpPerMergeRankMultiplier: 1, // PROVISIONAL result rank * 1, original rule unknown
+  boardColumns: 3,
+  maxCells: 24, // PROVISIONAL: full board limit not yet observed
+  initialCells: 6, // PROVISIONAL: level + 5 matches observed levels 2, 6 and 8
+  incomeIntervalMs: 2500, // DEDUCED: observed 631.2/sec = sum of table 1578 / 2.5
+  crateIntervalMs: { gemland: 10000, moonland: 20000, aztecland: 20000 },
+  // Gemland and Moonland wiki; Aztecland 20 s is PROVISIONAL.
+  tapReductionMs: 5000, // SECONDARY SOURCE W3, may differ between builds
+  priceNumerator: 115n,
+  priceDenominator: 100n,
+  moonUnlockGemlandLevel: 8, // two contemporary guides, not direct footage
+  aztecUnlockGemlandLevel: 16, // PROVISIONAL: no confirmed threshold
+  offlineCapMs: null, // PROVISIONAL: unlimited elapsed credit, original cap unknown
+  moonBoostEnabled: true, // DEDUCED via designer-2 header. Equal-rank ties: first gem, PROVISIONAL.
+  aztecVinesEnabled: false, // original mechanic known, growth time unknown
+} as const;
+
+// Readable decimal amounts retain precision actually published by the sources.
+// High-rank Moon amounts marked '?' in the source and Aztec inferred amounts stay tagged.
+export const REFERENCE_DATA = {
+  "readAt": "2026-10-22",
+  "referencePeriod": "2018 sources, wiki version unspecified; cannot establish single build",
+  "unitsWarning": "W1 heading Money earned, no period. W2 heading Production per sec but every entry formatted amount / 2.5. Division by 2.5 is now INFERRED by 3 independent designer screenshots (631.2/sec Gemland, 124.8/sec Moonland, 2.73k/sec Gemland with ad x2). This does not directly observe a payout animation cycle. Values abbreviated in source cannot recover underlying exact full precision.",
+  "sources": {
+    "W1": "https://merge-gems.fandom.com/wiki/Gemland_Gems",
+    "W2": "https://merge-gems.fandom.com/wiki/Moonland_Gems",
+    "W3": "https://merge-gems.fandom.com/wiki/Gems",
+    "W4": "https://merge-gems.fandom.com/wiki/Gemland",
+    "W5": "https://merge-gems.fandom.com/wiki/Moonland",
+    "W6": "https://merge-gems.fandom.com/wiki/Aztecland",
+    "O1": "https://www.gram.gs/game-detail-merge-gems.html",
+    "O2": "https://www.gram.gs/assets/pdf/GramGames_MergeGems!_PressRelease.pdf",
+    "G1": "https://www.levelwinner.com/merge-gems-beginners-guide-cheats-tips-tricks-grow-your-gem-collection/",
+    "G2": "https://writerparty.com/party/merge-gems-top-tips-walkthrough-cheats-and-strategy-guide/"
+  },
+  "rules": {
+    "crateIntervalMs": {
+      "gemland": 10000,
+      "moonland": 20000,
+      "aztecland": null,
+      "source": [
+        "W4",
+        "W5"
+      ],
+      "status": "secondary-source"
+    },
+    "tapReductionMs": {
+      "value": 5000,
+      "source": "W3",
+      "status": "secondary-source"
+    },
+    "giftIntervalMs": {
+      "value": 10800000,
+      "source": "W3",
+      "status": "secondary-source"
+    },
+    "priceMultiplier": {
+      "numerator": 115,
+      "denominator": 100,
+      "source": "W1",
+      "status": "secondary-source",
+      "rounding": "unknown"
+    },
+    "silverFirstPrice": {
+      "base": 1000,
+      "nextDisplayed": 1730,
+      "source": "W1",
+      "status": "secondary-source; source says 1.73k so precision beyond displayed amount unknown"
+    },
+    "shopMaxRank": {
+      "formula": "max(1, highestDiscoveredRank-4), requires at least one rank 1 or above gem",
+      "source": "W1",
+      "status": "secondary-source"
+    },
+    "giftRank": {
+      "min": 1,
+      "max": "max(1, highestDiscoveredRank-4)",
+      "distribution": "unknown; source says random without probabilities",
+      "source": "W1"
+    },
+    "crateContents": {
+      "defaultRank": 0,
+      "level2CrateRank": 1,
+      "source": "W1"
+    },
+    "moonUnlock": {
+      "gemlandLevel": 8,
+      "source": [
+        "G1",
+        "G2"
+      ],
+      "status": "guide corroboration; not direct game verification"
+    },
+    "moonBoost": {
+      "multiplier": 2,
+      "radiusTiles": 1,
+      "shape": "3x3 around highest-level gem",
+      "source": "W5",
+      "status": "secondary-source; highest-level probably means currently highest on board, precise ties/stacking unknown"
+    },
+    "aztecVines": {
+      "multiplierNumerator": 1,
+      "multiplierDenominator": 2,
+      "clear": "merge item",
+      "growthIntervalMs": null,
+      "source": "W6",
+      "status": "secondary-source"
+    },
+    "maxRank": {
+      "value": 38,
+      "source": "W1",
+      "status": "table highest rank; merge behaviour at cap unknown"
+    },
+    "xpPerMerge": null,
+    "xpLevelThresholds": null,
+    "offlineCapMs": null,
+    "offlineMultiplier": null,
+    "aztecUnlock": null,
+    "achievementMilestonesAndRewards": null,
+    "payoutIntervalMs": {
+      "value": 2500,
+      "status": "inferred",
+      "evidence": "Gemland designer-1: sum raw1578 /2.5 =631.2/sec. Moonland designer-2: sum boosted raw312 /2.5 =124.8/sec. Gemland designer-4: sum raw3414 x2 /2.5 =2731.2/sec =>2.73k/sec."
+    },
+    "observedXpDenominators": {
+      "2": 46,
+      "6": 210,
+      "8": 354,
+      "status": "confirmed-visible-designer-screenshots"
+    },
+    "observedBoardSlots": {
+      "2": 7,
+      "6": 11,
+      "8": 13,
+      "status": "confirmed-visible-designer-screenshots; geometric order not fully established"
+    }
+  },
+  "gems": [
+    {
+      "rank": 0,
+      "priceSourceDisplay": "N/A",
+      "basePrice": null,
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Stone",
+        "moneyEarnedDisplay": "1.2",
+        "moneyEarned": "1.2"
+      },
+      "moonland": {
+        "name": "Moonstone",
+        "moneyEarnedDisplay": "1.3",
+        "moneyEarned": "1.3",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Camopaltic",
+        "moneyEarnedDisplay": "1.5",
+        "moneyEarned": "1.5",
+        "inferredMoneyEarned": null,
+        "status": "secondary-source"
+      }
+    },
+    {
+      "rank": 1,
+      "priceSourceDisplay": "1k",
+      "basePrice": "1000",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Silver",
+        "moneyEarnedDisplay": "4",
+        "moneyEarned": "4"
+      },
+      "moonland": {
+        "name": "Crimson Moonstone",
+        "moneyEarnedDisplay": "4.5",
+        "moneyEarned": "4.5",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Great Camopaltic",
+        "moneyEarnedDisplay": "5",
+        "moneyEarned": "5",
+        "inferredMoneyEarned": null,
+        "status": "secondary-source"
+      }
+    },
+    {
+      "rank": 2,
+      "priceSourceDisplay": "4.5k",
+      "basePrice": "4500.0",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Great Silver",
+        "moneyEarnedDisplay": "12",
+        "moneyEarned": "12"
+      },
+      "moonland": {
+        "name": "Neon Moonstone",
+        "moneyEarnedDisplay": "13",
+        "moneyEarned": "13",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Rare Camopaltic",
+        "moneyEarnedDisplay": "15",
+        "moneyEarned": "15",
+        "inferredMoneyEarned": null,
+        "status": "secondary-source"
+      }
+    },
+    {
+      "rank": 3,
+      "priceSourceDisplay": "12k",
+      "basePrice": "12000",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Gold Bar",
+        "moneyEarnedDisplay": "30",
+        "moneyEarned": "30"
+      },
+      "moonland": {
+        "name": "Moon Pyramid",
+        "moneyEarnedDisplay": "33",
+        "moneyEarned": "33",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Half Tonalli",
+        "moneyEarnedDisplay": "37.5",
+        "moneyEarned": "37.5",
+        "inferredMoneyEarned": null,
+        "status": "secondary-source"
+      }
+    },
+    {
+      "rank": 4,
+      "priceSourceDisplay": "35k",
+      "basePrice": "35000",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Double Gold",
+        "moneyEarnedDisplay": "64",
+        "moneyEarned": "64"
+      },
+      "moonland": {
+        "name": "Double Moon Pyramid",
+        "moneyEarnedDisplay": "72",
+        "moneyEarned": "72",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Tonalli",
+        "moneyEarnedDisplay": "80",
+        "moneyEarned": "80",
+        "inferredMoneyEarned": null,
+        "status": "secondary-source"
+      }
+    },
+    {
+      "rank": 5,
+      "priceSourceDisplay": "95k",
+      "basePrice": "95000",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Triple Gold",
+        "moneyEarnedDisplay": "130",
+        "moneyEarned": "130"
+      },
+      "moonland": {
+        "name": "Waterstone",
+        "moneyEarnedDisplay": "146",
+        "moneyEarned": "146",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Matlalatl",
+        "moneyEarnedDisplay": "162.5",
+        "moneyEarned": "162.5",
+        "inferredMoneyEarned": null,
+        "status": "secondary-source"
+      }
+    },
+    {
+      "rank": 6,
+      "priceSourceDisplay": "260k",
+      "basePrice": "260000",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Sapphire",
+        "moneyEarnedDisplay": "270",
+        "moneyEarned": "270"
+      },
+      "moonland": {
+        "name": "Great Waterstone",
+        "moneyEarnedDisplay": "303",
+        "moneyEarned": "303",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Uncommon Matlalatl",
+        "moneyEarnedDisplay": "337.5",
+        "moneyEarned": "337.5",
+        "inferredMoneyEarned": null,
+        "status": "secondary-source"
+      }
+    },
+    {
+      "rank": 7,
+      "priceSourceDisplay": "750k",
+      "basePrice": "750000",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Rare Sapphire",
+        "moneyEarnedDisplay": "550",
+        "moneyEarned": "550"
+      },
+      "moonland": {
+        "name": "Rare Waterstone",
+        "moneyEarnedDisplay": "618",
+        "moneyEarned": "618",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Rare Matlalatl",
+        "moneyEarnedDisplay": "687.5",
+        "moneyEarned": "687.5",
+        "inferredMoneyEarned": null,
+        "status": "secondary-source"
+      }
+    },
+    {
+      "rank": 8,
+      "priceSourceDisplay": "2.2m",
+      "basePrice": "2200000.0",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Perfect Sapphire",
+        "moneyEarnedDisplay": "1.12k",
+        "moneyEarned": "1120.00"
+      },
+      "moonland": {
+        "name": "Epic Waterstone",
+        "moneyEarnedDisplay": "1.26k",
+        "moneyEarned": "1260.00",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Epic Matlalatl",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "1400.0000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 9,
+      "priceSourceDisplay": "6m",
+      "basePrice": "6000000",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Ruby",
+        "moneyEarnedDisplay": "2.4k",
+        "moneyEarned": "2400.0"
+      },
+      "moonland": {
+        "name": "Perfect Waterstone",
+        "moneyEarnedDisplay": "2.7k",
+        "moneyEarned": "2700.0",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Metzcanauhtli",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "3000.000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 10,
+      "priceSourceDisplay": "17m",
+      "basePrice": "17000000",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Rare Ruby",
+        "moneyEarnedDisplay": "5k",
+        "moneyEarned": "5000"
+      },
+      "moonland": {
+        "name": "Lifestone",
+        "moneyEarnedDisplay": "5.63k",
+        "moneyEarned": "5630.00",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Xochitli",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "6250.00",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 11,
+      "priceSourceDisplay": "50m",
+      "basePrice": "50000000",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Epic Ruby",
+        "moneyEarnedDisplay": "10.2k",
+        "moneyEarned": "10200.0"
+      },
+      "moonland": {
+        "name": "Great Lifestone",
+        "moneyEarnedDisplay": "11.48k",
+        "moneyEarned": "11480.00",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Great Xochitli",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "12750.000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 12,
+      "priceSourceDisplay": "145m",
+      "basePrice": "145000000",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Emerald",
+        "moneyEarnedDisplay": "20.5k",
+        "moneyEarned": "20500.0"
+      },
+      "moonland": {
+        "name": "Rare Lifestone",
+        "moneyEarnedDisplay": "23.06k",
+        "moneyEarned": "23060.00",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Ilhuicaatl",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "25625.000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 13,
+      "priceSourceDisplay": "420m",
+      "basePrice": "420000000",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Mystic Stone",
+        "moneyEarnedDisplay": "41.5k",
+        "moneyEarned": "41500.0"
+      },
+      "moonland": {
+        "name": "Epic Lifestone",
+        "moneyEarnedDisplay": "46.69k",
+        "moneyEarned": "46690.00",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Michi",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "51875.000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 14,
+      "priceSourceDisplay": "1.2b",
+      "basePrice": "1200000000.0",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Mysterious Stone",
+        "moneyEarnedDisplay": "84k",
+        "moneyEarned": "84000"
+      },
+      "moonland": {
+        "name": "Perfect Lifestone",
+        "moneyEarnedDisplay": "94.5k",
+        "moneyEarned": "94500.0",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Tlachinolli Michi",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "105000.00",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 15,
+      "priceSourceDisplay": "3.5b",
+      "basePrice": "3500000000.0",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Topaz",
+        "moneyEarnedDisplay": "170k",
+        "moneyEarned": "170000"
+      },
+      "moonland": {
+        "name": "Shard",
+        "moneyEarnedDisplay": "191.25k",
+        "moneyEarned": "191250.00",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Red Coatl",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "212500.00",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 16,
+      "priceSourceDisplay": "10b",
+      "basePrice": "10000000000",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Tiger Eye",
+        "moneyEarnedDisplay": "360k",
+        "moneyEarned": "360000"
+      },
+      "moonland": {
+        "name": "Great Shard",
+        "moneyEarnedDisplay": "405k",
+        "moneyEarned": "405000",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Red Cuetzpali",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "450000.00",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 17,
+      "priceSourceDisplay": "27.5b",
+      "basePrice": "27500000000.0",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Shiny Ruby",
+        "moneyEarnedDisplay": "760k",
+        "moneyEarned": "760000"
+      },
+      "moonland": {
+        "name": "Rare Shard",
+        "moneyEarnedDisplay": "855k",
+        "moneyEarned": "855000",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Rare Cuetzpali",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "950000.00",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 18,
+      "priceSourceDisplay": "75b",
+      "basePrice": "75000000000",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Droplet",
+        "moneyEarnedDisplay": "1.6m",
+        "moneyEarned": "1600000.0"
+      },
+      "moonland": {
+        "name": "Epic Shard",
+        "moneyEarnedDisplay": "1.8m",
+        "moneyEarned": "1800000.0",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Memecatic",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "2000000.000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 19,
+      "priceSourceDisplay": "220b",
+      "basePrice": "220000000000",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Rare Droplet",
+        "moneyEarnedDisplay": "3.5m",
+        "moneyEarned": "3500000.0"
+      },
+      "moonland": {
+        "name": "Perfect Shard",
+        "moneyEarnedDisplay": "3.94m",
+        "moneyEarned": "3940000.00",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Memecatic Throne",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "4375000.000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 20,
+      "priceSourceDisplay": "638b",
+      "basePrice": "638000000000",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Unusual Droplet",
+        "moneyEarnedDisplay": "7.3m",
+        "moneyEarned": "7300000.0"
+      },
+      "moonland": {
+        "name": "Prism Stone",
+        "moneyEarnedDisplay": "8.21m",
+        "moneyEarned": "8210000.00",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Atototl",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "9125000.000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 21,
+      "priceSourceDisplay": "1.85t",
+      "basePrice": "1850000000000.00",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Lovely Ruby",
+        "moneyEarnedDisplay": "14.9m",
+        "moneyEarned": "14900000.0"
+      },
+      "moonland": {
+        "name": "Great Prism Stone",
+        "moneyEarnedDisplay": "16.76m",
+        "moneyEarned": "16760000.00",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Uncommon Atototl",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "18625000.000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 22,
+      "priceSourceDisplay": "5.36t",
+      "basePrice": "5360000000000.00",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Lovely Pink Ruby",
+        "moneyEarnedDisplay": "30m",
+        "moneyEarned": "30000000"
+      },
+      "moonland": {
+        "name": "Rare Prism Stone",
+        "moneyEarnedDisplay": "33.75m",
+        "moneyEarned": "33750000.00",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Rare Atototl",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "37500000.00",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 23,
+      "priceSourceDisplay": "15.55t",
+      "basePrice": "15550000000000.00",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Violet Love",
+        "moneyEarnedDisplay": "60.6m",
+        "moneyEarned": "60600000.0"
+      },
+      "moonland": {
+        "name": "Epic Prism Stone",
+        "moneyEarnedDisplay": "68.18m",
+        "moneyEarned": "68180000.00",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Epic Atototl",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "75750000.000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 24,
+      "priceSourceDisplay": "45.1t",
+      "basePrice": "45100000000000.0",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Pentagem",
+        "moneyEarnedDisplay": "121.5m",
+        "moneyEarned": "121500000.0"
+      },
+      "moonland": {
+        "name": "Perfect Prism Stone",
+        "moneyEarnedDisplay": "136.69m",
+        "moneyEarned": "136690000.00",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Legendary Atototl",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "151875000.000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 25,
+      "priceSourceDisplay": "130.7t",
+      "basePrice": "130700000000000.0",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Uncommon Pentagem",
+        "moneyEarnedDisplay": "245.7m",
+        "moneyEarned": "245700000.0"
+      },
+      "moonland": {
+        "name": "Stalagmite",
+        "moneyEarnedDisplay": "276.41m",
+        "moneyEarned": "276410000.00",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Green Tecuani",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "307125000.000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 26,
+      "priceSourceDisplay": "1000t",
+      "basePrice": "1000000000000000",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Mythical Pentagem",
+        "moneyEarnedDisplay": "493.4m",
+        "moneyEarned": "493400000.0"
+      },
+      "moonland": {
+        "name": "Great Stalagmite",
+        "moneyEarnedDisplay": "555.08m",
+        "moneyEarned": "555080000.00",
+        "status": "secondary-source"
+      },
+      "aztecland": {
+        "name": "Noble Tecuani",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "616750000.000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 27,
+      "priceSourceDisplay": "2.9a",
+      "basePrice": "2900000000000000.0",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Life Stone",
+        "moneyEarnedDisplay": "1b",
+        "moneyEarned": "1000000000"
+      },
+      "moonland": {
+        "name": "Rare Stalagmite",
+        "moneyEarnedDisplay": "1.125b?",
+        "moneyEarned": "1125000000.000",
+        "status": "wiki-explicitly-uncertain"
+      },
+      "aztecland": {
+        "name": "Royal Tecuani",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "1250000000.00",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 28,
+      "priceSourceDisplay": "8.7a",
+      "basePrice": "8700000000000000.0",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Silver Lifestone",
+        "moneyEarnedDisplay": "2b",
+        "moneyEarned": "2000000000"
+      },
+      "moonland": {
+        "name": "Epic Stalagmite",
+        "moneyEarnedDisplay": "2.25b?",
+        "moneyEarned": "2250000000.00",
+        "status": "wiki-explicitly-uncertain"
+      },
+      "aztecland": {
+        "name": "Queen Tecuani",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "2500000000.00",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 29,
+      "priceSourceDisplay": "25.2a",
+      "basePrice": "25200000000000000.0",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Great Lifestone",
+        "moneyEarnedDisplay": "4.13b",
+        "moneyEarned": "4130000000.00"
+      },
+      "moonland": {
+        "name": "Perfect Stalagmite",
+        "moneyEarnedDisplay": "4.65b?",
+        "moneyEarned": "4650000000.00",
+        "status": "wiki-explicitly-uncertain"
+      },
+      "aztecland": {
+        "name": "King Tecuani Michi",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "5162500000.0000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 30,
+      "priceSourceDisplay": "73.1a",
+      "basePrice": "73100000000000000.0",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Faded Emerald",
+        "moneyEarnedDisplay": "10b",
+        "moneyEarned": "10000000000"
+      },
+      "moonland": {
+        "name": "Obelisk",
+        "moneyEarnedDisplay": "11.25b?",
+        "moneyEarned": "11250000000.00",
+        "status": "wiki-explicitly-uncertain"
+      },
+      "aztecland": {
+        "name": "Tzompantli",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "12500000000.00",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 31,
+      "priceSourceDisplay": "211.9a",
+      "basePrice": "211900000000000000.0",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Framed Emerald",
+        "moneyEarnedDisplay": "20.2b",
+        "moneyEarned": "20200000000.0"
+      },
+      "moonland": {
+        "name": "Great Obelisk",
+        "moneyEarnedDisplay": "22.73b?",
+        "moneyEarned": "22730000000.00",
+        "status": "wiki-explicitly-uncertain"
+      },
+      "aztecland": {
+        "name": "Uncommon Tzompantli",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "25250000000.000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 32,
+      "priceSourceDisplay": "614.51a",
+      "basePrice": "614510000000000000.00",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Golden Emerald",
+        "moneyEarnedDisplay": "41.6b",
+        "moneyEarned": "41600000000.0"
+      },
+      "moonland": {
+        "name": "Rare Obelisk",
+        "moneyEarnedDisplay": "46.8b?",
+        "moneyEarned": "46800000000.0",
+        "status": "wiki-explicitly-uncertain"
+      },
+      "aztecland": {
+        "name": "Tzompantli Xochitli",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "52000000000.000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 33,
+      "priceSourceDisplay": "1.78b**",
+      "basePrice": "1780000000000000000.00",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Stargem",
+        "moneyEarnedDisplay": "88b",
+        "moneyEarned": "88000000000"
+      },
+      "moonland": {
+        "name": "Epic Obelisk",
+        "moneyEarnedDisplay": "99b?",
+        "moneyEarned": "99000000000",
+        "status": "wiki-explicitly-uncertain"
+      },
+      "aztecland": {
+        "name": "Epic Tzompantli",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "110000000000.00",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 34,
+      "priceSourceDisplay": "5.17b**",
+      "basePrice": "5170000000000000000.00",
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Silver Stargem",
+        "moneyEarnedDisplay": "176.4b",
+        "moneyEarned": "176400000000.0"
+      },
+      "moonland": {
+        "name": "Perfect Obelisk",
+        "moneyEarnedDisplay": "198.45b?",
+        "moneyEarned": "198450000000.00",
+        "status": "wiki-explicitly-uncertain"
+      },
+      "aztecland": {
+        "name": "Red Tonatiuh",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "220500000000.000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 35,
+      "priceSourceDisplay": "N/A",
+      "basePrice": null,
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Golden Stargem",
+        "moneyEarnedDisplay": "360.8b",
+        "moneyEarned": "360800000000.0"
+      },
+      "moonland": {
+        "name": "Space Gem",
+        "moneyEarnedDisplay": "405.9b?",
+        "moneyEarned": "405900000000.0",
+        "status": "wiki-explicitly-uncertain"
+      },
+      "aztecland": {
+        "name": "Uncommon Tonatiuh",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "451000000000.000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 36,
+      "priceSourceDisplay": "N/A",
+      "basePrice": null,
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Royal Gem",
+        "moneyEarnedDisplay": "730b",
+        "moneyEarned": "730000000000"
+      },
+      "moonland": {
+        "name": "Unique Space Gem",
+        "moneyEarnedDisplay": "821.25b?",
+        "moneyEarned": "821250000000.00",
+        "status": "wiki-explicitly-uncertain"
+      },
+      "aztecland": {
+        "name": "Rare Tonatiuh",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "912500000000.00",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 37,
+      "priceSourceDisplay": "N/A",
+      "basePrice": null,
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "Perfect Royal Gem",
+        "moneyEarnedDisplay": "1.54t",
+        "moneyEarned": "1540000000000.00"
+      },
+      "moonland": {
+        "name": "Legendary Space Gem",
+        "moneyEarnedDisplay": "1.73t?",
+        "moneyEarned": "1730000000000.00",
+        "status": "wiki-explicitly-uncertain"
+      },
+      "aztecland": {
+        "name": "Epic Tonatiuh",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "1925000000000.0000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    },
+    {
+      "rank": 38,
+      "priceSourceDisplay": "N/A",
+      "basePrice": null,
+      "source": "W1",
+      "status": "confirmed-in-secondary-source-not-game-verified",
+      "gemland": {
+        "name": "The One True Gem",
+        "moneyEarnedDisplay": "3.18t",
+        "moneyEarned": "3180000000000.00"
+      },
+      "moonland": {
+        "name": "The One True Moon Gem",
+        "moneyEarnedDisplay": "3.58t?",
+        "moneyEarned": "3580000000000.00",
+        "status": "wiki-explicitly-uncertain"
+      },
+      "aztecland": {
+        "name": "The One True Tonatiuh",
+        "moneyEarnedDisplay": null,
+        "moneyEarned": null,
+        "inferredMoneyEarned": "3975000000000.0000",
+        "status": "inferred-from-wiki-5/4-ratio-unverified"
+      }
+    }
+  ]
+} as const;
+
+export const GEM_TABLE = REFERENCE_DATA.gems;

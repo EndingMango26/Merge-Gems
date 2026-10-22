@@ -1,0 +1,75 @@
+import type { Language, WorldId } from './game/types';
+const fr = {
+  exportError:'Impossible d’exporter cette partie. Les données enregistrées sont conservées.',
+  settings:'Paramètres', shop:'Boutique', collection:'Collection', close:'Fermer', coins:'Pièces', perSecond:'/sec',
+  generate:'Faire apparaître une caisse', full:'PLEIN', open:'Ouvrir la caisse', empty:'Case libre', locked:'Verrouillé',
+  move:'Déplacer', language:'Langue', sound:'Effets sonores', on:'Activés', off:'Désactivés', export:'Exporter la partie', import:'Importer une partie',
+  reset:'Nouvelle partie', confirmReset:'Remplacer définitivement cette partie par une nouvelle ? Exportez-la d’abord pour la conserver.',
+  confirmImport:'Remplacer la partie actuelle par le fichier sélectionné ? La sauvegarde précédente sera conservée.',
+  imported:'Partie restaurée.', invalidFile:'Fichier invalide ou incompatible. Votre partie est conservée.',
+  storageError:'La sauvegarde est bloquée. Votre partie n’a pas été réinitialisée. Exportez-la pour la conserver.',
+  damaged:'La sauvegarde locale ne peut pas être chargée. Exportez les données brutes avant de choisir une nouvelle partie ou d’importer un fichier valide.',
+  recovered:'Une sauvegarde précédente a été récupérée. Confirmez sa restauration pour reprendre.', restore:'Restaurer la sauvegarde précédente',
+  rawExport:'Exporter les données brutes', session:'Une autre fenêtre utilise cette partie. Cette fenêtre attend sa fermeture.',
+  local:'La partie reste sur cet appareil et ce navigateur. Exportez-la pour la transférer.',
+  about:'À propos de cette reconstruction', evidence:'Reconstruction indépendante, en cours. Les valeurs issues des références, les règles provisoires et les écarts sont documentés dans le dépôt. Aucun lien avec Gram Games ou Zynga.',
+  missing:'Succès, cadeaux aléatoires, lianes aztèques et audio original : références encore incomplètes. Les offres publicitaires et payantes sont retirées.',
+  references:'Références et limites', install:'Sur iPhone : Safari → Partager → Sur l’écran d’accueil. Ouvrez une fois en ligne pour préparer le mode hors connexion.',
+  tutorial0:'Appuyez sur la caisse en bas pour accélérer son arrivée.', tutorial1:'Touchez une caisse du plateau pour l’ouvrir.',
+  tutorial2:'Glissez une pierre sur une pierre identique pour les fusionner.', tutorial3:'Chaque gemme rapporte des pièces. Continuez à fusionner !',
+  newGem:'Nouvelle gemme découverte !', continue:'Continuer', level:'Niveau', notEnough:'Pas assez de pièces.', noSpace:'Le plateau est plein. Fusionnez deux gemmes identiques.',
+  shopHint:'La boutique propose les gemmes disponibles selon votre meilleure découverte.', buy:'Acheter', undiscovered:'À découvrir', rank:'Rang',
+  away:'Pendant votre absence', earned:'Pièces gagnées', update:'Une mise à jour est prête', reload:'Enregistrer et actualiser', offlineReady:'Prêt à jouer hors connexion',
+  unlockMoon:'Gemland · niveau 8', unlockAztec:'Gemland · niveau 16 (provisoire)', area:'Changer de terre', complete:'Collection complétée !',
+  unavailable:'Aucune gemme disponible pour le moment. Fusionnez vos premières pierres.', selected:'sélectionnée', exportFail:'L’export n’a pas pu être téléchargé. Réessayez depuis Safari.',
+  gesture:'Glissez pour fusionner · ou touchez deux cases', saved:'Sauvegardé', caution:'Version de reconstruction',
+};
+const en: typeof fr = {
+  exportError:'This game could not be exported. Saved data has been kept.',
+  settings:'Settings', shop:'Shop', collection:'Collection', close:'Close', coins:'Coins', perSecond:'/sec',
+  generate:'Generate a crate', full:'FULL', open:'Open crate', empty:'Empty tile', locked:'Locked', move:'Move',
+  language:'Language', sound:'Sound effects', on:'On', off:'Off', export:'Export save', import:'Import save', reset:'New game',
+  confirmReset:'Permanently replace this game with a new one? Export it first to keep a copy.',
+  confirmImport:'Replace your current game with the selected file? The previous save will be kept.',
+  imported:'Game restored.', invalidFile:'Invalid or incompatible file. Your game has been kept.',
+  storageError:'Saving is blocked. Your game has not been reset. Export it to keep a copy.',
+  damaged:'The local save could not be loaded. Export the raw data before choosing a new game or importing a valid file.',
+  recovered:'A previous save was recovered. Confirm its restoration to resume.', restore:'Restore previous save', rawExport:'Export raw data',
+  session:'Another window is using this game. This window is waiting for it to close.',
+  local:'Your game stays on this device and browser. Export it to transfer it.', about:'About this reconstruction',
+  evidence:'Independent reconstruction in progress. Reference values, provisional rules and differences are documented in the repository. Not affiliated with Gram Games or Zynga.',
+  missing:'Achievements, random gifts, Aztec vines and original audio: references are still incomplete. Advertising and paid offers are removed.',
+  references:'References and limitations', install:'On iPhone: Safari → Share → Add to Home Screen. Open once online to prepare offline play.',
+  tutorial0:'Tap the crate at the bottom to make it arrive sooner.', tutorial1:'Tap a crate on the board to open it.',
+  tutorial2:'Drag a stone onto an identical stone to merge them.', tutorial3:'Every gem earns coins. Keep merging!',
+  newGem:'New gem discovered!', continue:'Continue', level:'Level', notEnough:'Not enough coins.', noSpace:'The board is full. Merge two identical gems.',
+  shopHint:'Available gems depend on your highest discovery.', buy:'Buy', undiscovered:'Undiscovered', rank:'Rank',
+  away:'While you were away', earned:'Coins earned', update:'An update is ready', reload:'Save and reload', offlineReady:'Ready for offline play',
+  unlockMoon:'Gemland · level 8', unlockAztec:'Gemland · level 16 (provisional)', area:'Change land', complete:'Collection complete!',
+  unavailable:'No gems are available yet. Merge your first stones.', selected:'selected', exportFail:'The export could not be downloaded. Try again in Safari.',
+  gesture:'Drag to merge · or tap two tiles', saved:'Saved', caution:'Reconstruction build',
+};
+export type TextKey = keyof typeof fr;
+export function translate(lang:Language,key:TextKey):string { return (lang === 'fr' ? fr : en)[key]; }
+export function worldName(id:WorldId,lang:Language):string {
+  return lang==='en' ? {gemland:'Gemland',moonland:'Moonland',aztecland:'Aztecland'}[id] : {gemland:'Terre des gemmes',moonland:'Terre lunaire',aztecland:'Terre aztèque'}[id];
+}
+const frenchNames:Record<string,string> = {
+ 'Stone':'Pierre','Silver':'Argent','Great Silver':'Grand argent','Gold Bar':'Lingot d’or','Double Gold':'Or double','Triple Gold':'Or triple',
+ 'Sapphire':'Saphir','Rare Sapphire':'Saphir rare','Perfect Sapphire':'Saphir parfait','Ruby':'Rubis','Rare Ruby':'Rubis rare','Epic Ruby':'Rubis épique',
+ 'Emerald':'Émeraude','Mystic Stone':'Pierre mystique','Mysterious Stone':'Pierre mystérieuse','Topaz':'Topaze','Tiger Eye':'Œil de tigre','Shiny Ruby':'Rubis brillant',
+ 'Droplet':'Goutte','Rare Droplet':'Goutte rare','Unusual Droplet':'Goutte singulière','Lovely Ruby':'Rubis cœur','Lovely Pink Ruby':'Rubis cœur rose','Violet Love':'Cœur violet',
+ 'Pentagem':'Pentagemme','Uncommon Pentagem':'Pentagemme singulière','Mythical Pentagem':'Pentagemme mythique','Life Stone':'Pierre de vie','Silver Lifestone':'Pierre de vie argentée',
+ 'Great Lifestone':'Grande pierre de vie','Faded Emerald':'Émeraude pâle','Framed Emerald':'Émeraude encadrée','Golden Emerald':'Émeraude dorée','Stargem':'Gemme étoilée',
+ 'Silver Stargem':'Gemme étoilée argentée','Golden Stargem':'Gemme étoilée dorée','Royal Gem':'Gemme royale','Perfect Royal Gem':'Gemme royale parfaite','The One True Gem':'La gemme suprême',
+ 'Moonstone':'Pierre de lune','Crimson Moonstone':'Pierre de lune écarlate','Neon Moonstone':'Pierre de lune néon','Moon Pyramid':'Pyramide lunaire','Double Moon Pyramid':'Double pyramide lunaire',
+ 'Waterstone':'Pierre d’eau','Lifestone':'Pierre de vie','Shard':'Éclat','Prism Stone':'Pierre prismatique','Stalagmite':'Stalagmite','Obelisk':'Obélisque','Space Gem':'Gemme spatiale',
+ 'The One True Moon Gem':'La gemme lunaire suprême','The One True Tonatiuh':'Le Tonatiuh suprême',
+};
+export function localizedGem(name:string,lang:Language):string {
+  if(lang==='en') return name;
+  if(frenchNames[name]) return frenchNames[name];
+  const prefixes:Record<string,string>={Great:'Grande',Rare:'Rare',Epic:'Épique',Perfect:'Parfaite',Unique:'Unique',Legendary:'Légendaire',Uncommon:'Singulière',Noble:'Noble',Royal:'Royale',Queen:'Reine',King:'Roi',Green:'Vert',Red:'Rouge'};
+  const [prefix,...rest]=name.split(' ');
+  return prefixes[prefix] ? `${frenchNames[rest.join(' ')] ?? rest.join(' ')} · ${prefixes[prefix].toLocaleLowerCase('fr')}` : name;
+}

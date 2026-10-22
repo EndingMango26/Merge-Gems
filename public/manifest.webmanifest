@@ -1,0 +1,17 @@
+{
+  "id": "./",
+  "name": "Merge Gems!",
+  "short_name": "Merge Gems!",
+  "description": "Jeu de fusion de gemmes, sauvegardé sur cet appareil. Gem merging game, saved on this device.",
+  "lang": "fr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#84989e",
+  "theme_color": "#84989e",
+  "icons": [
+    { "src": "assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" }
+  ]
+}
