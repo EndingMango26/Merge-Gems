@@ -42,7 +42,12 @@ Les publicités et paiements réels restent exclus par décision utilisateur. La
 - `37ac40e` : preuves et limites, commit local et push vérifiés.
 - `71a0a23` : moteur, interface, sauvegardes et PWA, commit local et push vérifiés.
 - CI GitHub sur `71a0a23` : succès, https://github.com/EndingMango26/Merge-Gems/actions/runs/39779797009.
-- Les commits de vérification et améliorations ultérieurs sont indiqués dans l’historique de la branche. Dernière validation locale :46tests unitaires et16scénarios Chromium/WebKit réussis ; détails dans `verification.md`.
+- `1318b4a` : corrections du cache, comparaison officielle, graphismes et vérifications ; commit local et push vérifiés.
+- Dernière validation locale :46tests unitaires et16scénarios Chromium/WebKit réussis ; détails dans `verification.md`.
+- CI GitHub sur `1318b4a` : succès, https://github.com/EndingMango26/Merge-Gems/actions/runs/39782071049.
+- Proposition de revue en brouillon : https://github.com/EndingMango26/Merge-Gems/pull/1. Ce statut souligne la fidélité encore incomplète.
+- URL Pages vérifiée après push : HTTP404 le22octobre2026. Aucun site publié constaté.
+- Un commit documentaire de passation suit ces vérifications ; ses seules modifications sont les informations ci-dessus et le guide de revue.
 - Aucun merge dans `main`, aucune activation Pages et aucune publication effectués par l’agent.
 
 La cible `https://EndingMango26.github.io/Merge-Gems/` ne doit pas être présentée comme publiée avant un déploiement réussi et une vérification de l’URL. L’utilisateur activera Pages lui-même. Voir `install-iphone.md`.

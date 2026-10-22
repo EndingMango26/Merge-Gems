@@ -5,7 +5,7 @@
 Les fichiers sont préparés pour `https://EndingMango26.github.io/Merge-Gems/`.
 Cette adresse est une cible ; la présence de ce guide ne prouve pas la publication.
 
-1. Intégrer la branche de reconstruction dans `main` après examen. Le workflow doit être présent sur la branche par défaut pour apparaître dans Actions.
+1. Ouvrir [la proposition de revue nº1](https://github.com/EndingMango26/Merge-Gems/pull/1). Elle est en brouillon car la fidélité reste incomplète. Pour publier cette version jouable provisoire après examen, utiliser **Ready for review**, puis **Merge pull request**, afin d’intégrer la branche dans `main`. Le workflow doit être sur la branche par défaut pour apparaître dans Actions.
 2. Dans le dépôt GitHub, ouvrir **Settings → Pages → Build and deployment → Source → GitHub Actions**.
 3. Ouvrir **Actions → Publish GitHub Pages manually → Run workflow**, choisir `main`, puis lancer.
 4. Attendre le succès des deux étapes `build` et `deploy`. Ouvrir l'URL indiquée par l'environnement `github-pages` et vérifier que le jeu charge ses images et démarre.
