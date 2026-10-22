@@ -14,6 +14,7 @@ import {
   tapGenerator,
   unlockedCells,
   xpToNextLevel,
+  getCrateTimer,
 } from "../src/game/engine";
 import {
   boostedCellIndices,
@@ -206,8 +207,102 @@ describe("controlled clock, generation and resumption", () => {
     const cells = structuredClone(world.cells);
     advance(state, START + 100_000);
     expect(world.cells).toEqual(cells);
-    expect(world.nextCrateAt).toBe(START + 110_000);
+    expect(world.nextCrateAt).toBe(START + 100_000);
     expect(world.purchases[1]).toBe(0);
+  });
+
+  it("counts down on a full board, then holds exactly one ready crate", () => {
+    const state = fresh();
+    const world = state.worlds.gemland;
+    fill(world);
+    advance(state, START + 1000);
+    expect(getCrateTimer(world, START + 1000).remainingMs).toBe(9000);
+    expect(getCrateTimer(world, START + 1000)).toMatchObject({
+      seconds: 9,
+      ready: false,
+      full: true,
+    });
+    advance(state, START + 9999);
+    expect(getCrateTimer(world, START + 9999).seconds).toBe(1);
+    expect(advance(state, START + 10000).crates).toBe(0);
+    expect(getCrateTimer(world, START + 10000)).toMatchObject({
+      seconds: 0,
+      ready: true,
+      full: true,
+    });
+    advance(state, START + 3600000);
+    expect(getCrateTimer(world, START + 3600000).ready).toBe(true);
+    expect(world.cells.slice(0, 6).every((tile) => tile?.kind === "gem")).toBe(
+      true,
+    );
+  });
+
+  it("delivers the held crate when a merge frees a slot and restarts from delivery", () => {
+    const state = fresh();
+    const world = state.worlds.gemland;
+    fill(world);
+    advance(state, START + 3600000);
+    expect(move(state, 0, 1, START + 3600000)).toBe("merged");
+    expect(world.cells[0]).toEqual({ kind: "crate", rank: 0 });
+    expect(world.cells[1]?.rank).toBe(1);
+    expect(world.cells.filter((tile) => tile?.kind === "crate")).toHaveLength(
+      1,
+    );
+    expect(world.nextCrateAt).toBe(START + 3610000);
+    expect(getCrateTimer(world, START + 3600000)).toMatchObject({
+      seconds: 10,
+      ready: false,
+      full: true,
+    });
+    // Freeing a second slot at the same instant cannot consume an offline queue.
+    expect(move(state, 2, 3, START + 3600000)).toBe("merged");
+    expect(world.cells[2]).toBeNull();
+    expect(advance(state, START + 3609999).crates).toBe(0);
+    expect(advance(state, START + 3610000).crates).toBe(1);
+    expect(advance(state, START + 3610000).crates).toBe(0);
+  });
+
+  it("does not deliver early when a slot is freed before the countdown ends", () => {
+    const state = fresh();
+    const world = state.worlds.gemland;
+    fill(world);
+    expect(move(state, 0, 1, START + 9000)).toBe("merged");
+    expect(world.cells[0]).toBeNull();
+    expect(getCrateTimer(world, START + 9000)).toMatchObject({
+      seconds: 1,
+      ready: false,
+      full: false,
+    });
+    expect(advance(state, START + 9999).crates).toBe(0);
+    expect(advance(state, START + 10000).crates).toBe(1);
+  });
+
+  it("keeps the visible countdown monotonic when the device clock moves backwards", () => {
+    const state = fresh();
+    const world = state.worlds.gemland;
+    advance(state, START + 1000);
+    expect(getCrateTimer(world, START - 100000).seconds).toBe(9);
+    advance(state, START + 10000);
+    const cells = structuredClone(world.cells);
+    expect(getCrateTimer(world, START - 100000).seconds).toBe(10);
+    expect(advance(state, START - 100000).crates).toBe(0);
+    expect(world.cells).toEqual(cells);
+  });
+
+  it("retains the documented separate Moonland interval", () => {
+    const state = fresh();
+    state.worlds.gemland.level = RULES.moonUnlockGemlandLevel;
+    state.activeWorld = "moonland";
+    const world = state.worlds.moonland;
+    expect(getCrateTimer(world, START).seconds).toBe(20);
+    expect(advance(state, START + 19999).crates).toBe(1); // Gemland only
+    expect(world.cells.filter((tile) => tile?.kind === "crate")).toHaveLength(
+      1,
+    );
+    expect(advance(state, START + 20000).crates).toBe(2); // Both lands
+    expect(world.cells.filter((tile) => tile?.kind === "crate")).toHaveLength(
+      2,
+    );
   });
 
   it("credits exact accumulated income once after absence and survives a backward clock", () => {

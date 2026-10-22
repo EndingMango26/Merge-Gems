@@ -27,6 +27,8 @@ Des exécutables configurés peuvent être sélectionnés avec `MERGE_GEMS_CHROM
 
 - Menu triche : désactivation initiale sur anciennes sauvegardes, activation dans les réglages, position du bouton en haut à gauche, conservation au rechargement et export/import, ajout de monnaie et de gemme, niveau, déblocage et changement de terres, traduction FR/EN et masquage sans perte des changements.
 
+- Générateur avec horloge contrôlée :10s et20s, compteur et jauge sur plateau plein, état prêt, fusion libérant une case, aucun stock illimité, appui, échéance exacte et rechargement sans double livraison.
+
 ## Résultats et limites
 
 Le résultat du dernier lancement est écrit dans `test-results/browser-report.json`, avec les versions des navigateurs, chaque scénario et son statut. Les captures, JSON exportés et diagnostics d'échec sont conservés dans `test-results/`, ignoré par Git. Un scénario en échec ou un navigateur indisponible fait terminer le script avec un code non nul.

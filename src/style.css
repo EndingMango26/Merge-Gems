@@ -1297,3 +1297,53 @@ details[open] summary::before {
   width: 100%;
   max-width: 100%;
 }
+
+/* The original generator is a filling crate silhouette. Keep its badge outside
+   the clipped fill so two-digit timers remain fully visible on small screens. */
+.generator {
+  border: 0;
+  clip-path: none;
+  overflow: visible;
+}
+.generator-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  color: #d8e0e0bd;
+}
+.generator-outline,
+.generator-art {
+  position: absolute;
+  inset: 7px;
+  width: calc(100% - 14px);
+  height: calc(100% - 14px);
+  display: block;
+}
+.generator-outline {
+  filter: brightness(0);
+  opacity: 0.65;
+}
+.generator-art {
+  clip-path: inset(var(--crate-hidden, 100%) 0 0 0);
+  opacity: 1;
+  filter: none;
+  transition: clip-path 0.18s linear;
+}
+.generator strong {
+  left: -6px;
+  top: -3px;
+}
+.generator[data-blocked="true"] .generator-art {
+  opacity: 0;
+}
+.generator[data-blocked="true"] strong {
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  color: white;
+  box-shadow: none;
+  transform: none;
+  font-size: 21px;
+}
