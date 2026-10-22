@@ -70,4 +70,6 @@ Validation de cette correction : **64 tests unitaires et 20 scénarios Chromium/
 
 ## Reprendre
 
+Correction suivante, en cours : l’utilisateur précise que les appuis ne retirent pas 5 secondes dans l’original. Cette valeur du wiki est désormais une contradiction, pas une règle établie pour sa version. La recherche et la nouvelle inspection du trailer ne quantifient pas l’appui. Voir `tap-timing-analysis.md`. Branche `fix/generator-tap-acceleration`, base `cf38b00` ; aucune modification du gameplay ni publication en attendant la précision nécessaire.
+
 Lire d’abord `reference-analysis.md`, `src/data/rules.ts`, `asset-inventory.md` et `verification.md`. Lancer `npm ci`, `npm test`, `npm run build`, puis le parcours navigateur. Toute nouvelle valeur doit porter sa source et son statut ; un test interne vert ne confirme pas sa fidélité historique.

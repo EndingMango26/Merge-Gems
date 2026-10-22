@@ -22,7 +22,7 @@ La cible de recherche est la période de lancement mondial d’avril 2018 et les
 | Initialisation | Six cases, deux pierres et une caisse ; zéro monnaie ; tutoriel en trois actions : **provisoire**, nouvelle partie originale non observée. |
 | XP | Quantité par fusion = rang obtenu (index zéro), **provisoire**. Seuils des niveaux2/6/8 =46/210/354 observés ; autres seuils interpolés/extrapolés provisoires. Paramètres dans `src/data/rules.ts`. |
 | Cases | Nombre = niveau+5, plafond24 : formule et plafond **provisoires** ; correspondent aux points observés7/11/13. Première case centrée lorsque nombre modulo3=1 ; forme correspondant aux captures2/4. |
-| Générateur | Gemland10s, Moonland20s, -5s/appui : sources secondaires. Aztec20s **provisoire**. Compteur visible même sur plateau plein et jauge se remplissant depuis le bas : observés dans le trailer. État PLEIN à échéance et une caisse prête retenue : déduction provisoire. Voir `crate-timer-analysis.md`. |
+| Générateur | Gemland10s, Moonland20s : sources secondaires. Aztec20s **provisoire**. L’actuel −5s/appui est **contredit par l’utilisateur** ; le bon effet reste inconnu, voir `tap-timing-analysis.md`. Compteur visible même sur plateau plein et jauge se remplissant depuis le bas : observés dans le trailer. État PLEIN à échéance et une caisse prête retenue : déduction provisoire. Voir `crate-timer-analysis.md`. |
 | Moonland | Ouverture Gemland8 selon guides ; bonus3×3 ×2 incluant la plus haute gemme, déduit visuellement. En cas d’égalité la première case est retenue : **provisoire**. |
 | Aztecland | Accès Gemland16 **provisoire** ; revenus rang8+ déduits ×5/4 ; lianes non implémentées faute de cadence établie. Ce monde n’est pas fidèle à ce stade. |
 | Absence | Revenu au taux des gemmes présentes, illimité sans plafond ; caisses jusqu’au plateau plein, puis une caisse prête retenue à zéro jusqu’à libération d’une case. Tout ce traitement détaillé est **provisoire** : existence du revenu hors connexion attestée par guides, plafond et caisses non établis. |
@@ -132,7 +132,7 @@ Captures locales fournies par recherche visuelle parent : `scratch/references/de
 | Cadence monnaie | Déduit W1 + captures | Tableau fournit un revenu par 2.5 s, pas directement par seconde |
 | Génération Gemland | Confirmé secondaire W4 | 10 s par boîte ; upgrade 2.5 s mentionné «for some money», nature exacte pas prouvée |
 | Génération Moonland | Confirmé secondaire W5 | 20 s par boîte |
-| Tap générateur | Confirmé officiel : existence ; secondaire W3 : valeur | Réduit 5 s par appui selon ancien texte W3 ; pas chronométré |
+| Tap générateur | Confirmé officiel : accélération ; quantité inconnue | L’ancien texte W3 indique −5 s, mais l’utilisateur contredit cette valeur pour la version recherchée. Aucun autre delta établi. Voir `tap-timing-analysis.md`. |
 | Boîte ordinaire | Confirmé W1/W7 | Rang 0 ; boîte niveau 2 donne rang 1 ; conditions upgrade non connues |
 | Gift Box gratuit | Confirmé secondaire W3/J1 | Dans boutique, 3 h ; début de disponibilité initiale inconnu |
 | Gift/Mystery contenu | Confirmé secondaire W1 | Rang aléatoire 1..max(1,n-4), n étant le plus haut découvert ; **probabilités inconnues** |

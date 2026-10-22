@@ -1,5 +1,7 @@
 # Vérification ciblée du générateur de caisses — 22 octobre 2026
 
+**Mise à jour après retour utilisateur :** le retrait de 5 secondes par appui décrit ci-dessous est contredit pour la version recherchée. Ces observations documentent le correctif précédent ; elles n’établissent plus ce delta comme règle adaptée. La quantité de remplacement reste inconnue : voir [tap-timing-analysis.md](tap-timing-analysis.md).
+
 Recherche en lecture seule, suivie du correctif décrit en fin de document. 5 recherches Exa, 32 résultats demandés (pas 32 sources indépendantes). Sources lues et planches d’images réellement inspectées ; aucun nouveau fichier d’application obtenu. Les fichiers temporaires mentionnés ci-dessous restent hors du dépôt et ne sont pas nécessaires au jeu.
 
 ## Valeurs numériques
